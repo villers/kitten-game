@@ -1,4 +1,10 @@
 # Kitten Game
 
+- Mickaël Villers
+- Priscilla Joly
 
-# kitten-game
+**Server** : NestJS
+
+**Client** : NextJS
+
+Game as _La Brute_ with terrible Kittens !
