@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { KittenModule } from './modules/kitten/kitten.module';
+import { StatusModule } from './modules/status/status.module';
 
 @Module({
   //imports: [TypeOrmModule.forRoot(), KittenModule],
-  imports: [KittenModule],
+  imports: [KittenModule, StatusModule],
   controllers: [],
   providers: [],
 })
