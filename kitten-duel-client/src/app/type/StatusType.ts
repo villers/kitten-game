@@ -1,4 +1,4 @@
-export type responseType ={
-    code : number;
-    label : string
-}
+export type responseType = {
+  code: number;
+  label: string;
+};
