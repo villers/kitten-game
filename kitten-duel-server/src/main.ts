@@ -6,10 +6,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Kitten Duel API')
-    .setDescription('The kitten duel game API description')
+    .setTitle('Kitten Game API')
+    .setDescription('The kitten game API description')
     .setVersion('1.0')
-    .addTag('kitten-duel')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
