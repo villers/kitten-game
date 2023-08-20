@@ -78,23 +78,24 @@ export class KittenRepositoryImpl implements KittenRepository {
     return this.kittens.get(id);
   }
 
-  async findAllByLevel(level: number, id: string): Promise<Kitten[] | null> {
+  async findFightKittens(
+    level: number,
+    id: string,
+    difference: number,
+    limit: number,
+  ): Promise<Kitten[] | null> {
     if (this.kittens.size === 0) {
       throw new KittensNotFoundException(level);
     }
 
     const results = [...this.kittens.values()].filter(
       (kitten) =>
-        level + 3 >= kitten.level &&
-        level - 3 <= kitten.level &&
+        level + difference >= kitten.level &&
+        level - difference <= kitten.level &&
         kitten.id !== id,
     );
 
-    if (results.length >= 8) {
-      return results.slice(8);
-    }
-
-    return results;
+    return results.slice(0, limit);
   }
 
   async update(kitten: Kitten): Promise<void> {

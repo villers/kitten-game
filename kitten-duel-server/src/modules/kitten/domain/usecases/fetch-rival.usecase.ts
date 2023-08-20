@@ -20,9 +20,11 @@ export class FetchRivalUsecase {
     const currentPlayerLevel = currentPlayer.level;
 
     const rivals = [
-      ...(await this.kittenRepository.findAllByLevel(
+      ...(await this.kittenRepository.findFightKittens(
         currentPlayerLevel,
         currentPlayer.id,
+        3,
+        8,
       )),
     ];
 
