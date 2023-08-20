@@ -8,6 +8,7 @@ export class Kitten {
   equipmentIds: string[];
   victories: number;
   defeats: number;
+  level: number;
 
   constructor(partial?: Partial<Kitten>) {
     Object.assign(this, partial);

@@ -16,10 +16,12 @@ import {
   EQUIPMENT_REPOSITORY,
   EquipmentRepository,
 } from './domain/repositories/equipment.repository';
+import { FetchRivalController } from './infrastructure/presentation/api/controllers/fetch-rival.controller';
+import { FetchRivalUsecase } from './domain/usecases/fetch-rival.usecase';
 
 @Module({
   imports: [],
-  controllers: [OrganizeFightController],
+  controllers: [OrganizeFightController, FetchRivalController],
   providers: [
     {
       provide: OrganizeFightUsecase,
@@ -34,6 +36,12 @@ import {
           kittenRepository,
         ),
       inject: [EQUIPMENT_REPOSITORY, FIGHT_REPOSITORY, KITTEN_REPOSITORY],
+    },
+    {
+      provide: FetchRivalUsecase,
+      useFactory: (kittenRepository: KittenRepository) =>
+        new FetchRivalUsecase(kittenRepository),
+      inject: [KITTEN_REPOSITORY],
     },
     { provide: KITTEN_REPOSITORY, useClass: KittenRepositoryImpl },
     { provide: EQUIPMENT_REPOSITORY, useClass: EquipmentRepositoryImpl },
