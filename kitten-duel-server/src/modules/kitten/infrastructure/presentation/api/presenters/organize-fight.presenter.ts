@@ -1,21 +1,50 @@
 import { OrganizeFightOutput } from '../../../../domain/usecases/organize-fight.usecase';
 import { ApiProperty } from '@nestjs/swagger';
 
-class Step {
+class Kitten {
   @ApiProperty()
-  attackerId: string;
+  id: string;
 
   @ApiProperty()
-  defenderId: string;
+  name: string;
+
+  @ApiProperty()
+  power: number;
+
+  @ApiProperty()
+  hp: number;
+
+  @ApiProperty()
+  defense: number;
+
+  @ApiProperty()
+  speed: number;
+
+  @ApiProperty()
+  equipmentIds: string[];
+
+  @ApiProperty()
+  level: number;
+
+  @ApiProperty()
+  victories: number;
+
+  @ApiProperty()
+  defeats: number;
+
+  @ApiProperty()
+  xp: number;
+}
+
+class Step {
+  @ApiProperty()
+  attacker: Kitten;
+
+  @ApiProperty()
+  defender: Kitten;
 
   @ApiProperty()
   attackPower: number;
-
-  @ApiProperty()
-  attackerHp: number;
-
-  @ApiProperty()
-  defenderHp: number;
 }
 
 export class OrganizeFightPresenter {
@@ -23,25 +52,16 @@ export class OrganizeFightPresenter {
   id: string;
 
   @ApiProperty()
-  kitten1Id: string;
+  kitten1: Kitten;
 
   @ApiProperty()
-  kitten2Id: string;
+  kitten2: Kitten;
 
   @ApiProperty()
-  winnerId: string;
+  winner: Kitten;
 
   @ApiProperty()
-  kitten1InitialHp: number;
-
-  @ApiProperty()
-  kitten2InitialHp: number;
-
-  @ApiProperty()
-  kitten1RemainingHp: number;
-
-  @ApiProperty()
-  kitten2RemainingHp: number;
+  looser: Kitten;
 
   @ApiProperty({ type: [Step] }) // To specify that it's an array of steps
   steps: Step[];
@@ -49,13 +69,10 @@ export class OrganizeFightPresenter {
   static toPresent(output: OrganizeFightOutput): OrganizeFightPresenter {
     return {
       id: output.fight.id,
-      kitten1Id: output.fight.kitten1Id,
-      kitten2Id: output.fight.kitten2Id,
-      winnerId: output.fight.winnerId,
-      kitten1InitialHp: output.fight.kitten1InitialHp,
-      kitten2InitialHp: output.fight.kitten2InitialHp,
-      kitten1RemainingHp: output.fight.kitten1RemainingHp,
-      kitten2RemainingHp: output.fight.kitten2RemainingHp,
+      kitten1: output.fight.kitten1,
+      kitten2: output.fight.kitten2,
+      winner: output.fight.winner,
+      looser: output.fight.looser,
       steps: output.fight.steps,
     };
   }

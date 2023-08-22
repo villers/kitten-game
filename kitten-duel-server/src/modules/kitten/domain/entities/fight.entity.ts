@@ -1,9 +1,9 @@
+import { Kitten } from './kitten.entity';
+
 export class FightStep {
-  attackerId: string;
-  defenderId: string;
   attackPower: number;
-  attackerHp: number;
-  defenderHp: number;
+  attacker: Kitten;
+  defender: Kitten;
 
   constructor(partial?: Partial<FightStep>) {
     Object.assign(this, partial);
@@ -12,13 +12,10 @@ export class FightStep {
 
 export class FightEntity {
   id: string;
-  kitten1Id: string;
-  kitten2Id: string;
-  winnerId: string;
-  kitten1InitialHp: number;
-  kitten2InitialHp: number;
-  kitten1RemainingHp: number;
-  kitten2RemainingHp: number;
+  kitten1: Kitten;
+  kitten2: Kitten;
+  winner: Kitten;
+  looser: Kitten;
   steps: FightStep[];
 
   constructor(partial?: Partial<FightEntity>) {

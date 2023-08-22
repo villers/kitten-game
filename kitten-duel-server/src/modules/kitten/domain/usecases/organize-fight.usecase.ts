@@ -29,18 +29,24 @@ export class OrganizeFightUsecase {
       inputs.kittenBId,
     );
 
-    // Create copies for simulation
-    const kittenA = new Kitten(originalKittenA);
-    const kittenB = new Kitten(originalKittenB);
+    const duel = this.initializeDuel(originalKittenA, originalKittenB);
 
-    const duel = this.initializeDuel(kittenA, kittenB);
+    let attacker = new Kitten(originalKittenA);
+    let defender = new Kitten(originalKittenB);
 
-    console.log(kittenA.isAlive(), kittenB.isAlive());
-    while (kittenA.isAlive() && kittenB.isAlive()) {
-      await this.performAttackAndUpdateDuel(kittenA, kittenB, duel);
+    while (attacker.isAlive() && defender.isAlive()) {
+      const attackDetail = await this.performAttack(attacker, defender);
+      duel.steps.push(attackDetail);
+      [attacker, defender] = [defender, attacker]; // Swap roles
     }
 
-    this.finalizeDuelAndUpdateKittens(duel, originalKittenA, originalKittenB);
+    this.finalizeDuelAndUpdateKittens(
+      duel,
+      originalKittenA,
+      originalKittenB,
+      attacker,
+      defender,
+    );
 
     await this.fightRepository.save(duel);
     await this.kittenRepository.save(originalKittenA);
@@ -51,40 +57,32 @@ export class OrganizeFightUsecase {
 
   private initializeDuel(kittenA: Kitten, kittenB: Kitten): FightEntity {
     const duel = new FightEntity();
-    duel.kitten1Id = kittenA.id;
-    duel.kitten2Id = kittenB.id;
-    duel.kitten1InitialHp = kittenA.hp;
-    duel.kitten2InitialHp = kittenB.hp;
+    duel.kitten1 = kittenA;
+    duel.kitten2 = kittenB;
     duel.steps = [];
     return duel;
-  }
-
-  private async performAttackAndUpdateDuel(
-    attacker: Kitten,
-    defender: Kitten,
-    duel: FightEntity,
-  ): Promise<void> {
-    const attackDetail = await this.performAttack(attacker, defender);
-    duel.steps.push(attackDetail);
-    [attacker, defender] = [defender, attacker]; // Swap roles
   }
 
   private finalizeDuelAndUpdateKittens(
     duel: FightEntity,
     kittenA: Kitten,
     kittenB: Kitten,
+    attacker: Kitten,
+    defender: Kitten,
   ): void {
-    duel.winnerId = kittenA.isAlive() ? kittenA.id : kittenB.id;
-    duel.kitten1RemainingHp = kittenA.hp;
-    duel.kitten2RemainingHp = kittenB.hp;
+    const winnerKitten = attacker.isAlive() ? attacker : defender;
+    const looserKitten = attacker.isAlive() ? defender : attacker;
 
-    const winner = duel.winnerId === kittenA.id ? kittenA : kittenB;
-    const loser = duel.winnerId === kittenA.id ? kittenB : kittenA;
+    duel.winner = winnerKitten;
+    duel.looser = looserKitten;
+
+    const winner = winnerKitten.id === kittenA.id ? kittenA : kittenB;
+    const looser = winnerKitten.id === kittenA.id ? kittenB : kittenA;
 
     winner.victories = (winner.victories || 0) + 1;
-    loser.defeats = (loser.defeats || 0) + 1;
+    looser.defeats = (looser.defeats || 0) + 1;
 
-    const xpGained = this.calculateXpGained(winner.level, loser.level);
+    const xpGained = this.calculateXpGained(winner.level, looser.level);
     winner.xp += xpGained;
     this.checkForLevelUpAndAssignPoints(winner);
   }
@@ -115,11 +113,9 @@ export class OrganizeFightUsecase {
     defender.hp -= damageToDefender;
 
     return {
-      attackerId: attacker.id,
-      defenderId: defender.id,
       attackPower: totalAttackPower,
-      attackerHp: attacker.hp,
-      defenderHp: defender.hp,
+      attacker: attacker,
+      defender: defender,
     };
   }
 
