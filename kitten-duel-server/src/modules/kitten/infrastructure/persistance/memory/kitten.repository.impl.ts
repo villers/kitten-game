@@ -20,6 +20,7 @@ export class KittenRepositoryImpl implements KittenRepository {
     kitten1.level = 1;
     kitten1.victories = 5;
     kitten1.defeats = 0;
+    kitten1.xp = 0;
 
     const kitten2 = new Kitten();
     kitten2.id = '2';
@@ -32,6 +33,7 @@ export class KittenRepositoryImpl implements KittenRepository {
     kitten2.level = 8;
     kitten2.victories = 10;
     kitten2.defeats = 10;
+    kitten2.xp = 0;
 
     const kitten3 = new Kitten();
     kitten3.id = '3';
@@ -44,6 +46,7 @@ export class KittenRepositoryImpl implements KittenRepository {
     kitten3.level = 3;
     kitten3.victories = 10;
     kitten3.defeats = 0;
+    kitten3.xp = 0;
 
     const kitten4 = new Kitten();
     kitten4.id = '4';
@@ -56,6 +59,7 @@ export class KittenRepositoryImpl implements KittenRepository {
     kitten4.level = 0;
     kitten4.victories = 10;
     kitten4.defeats = 0;
+    kitten4.xp = 0;
 
     this.kittens
       .set(kitten1.id, kitten1)

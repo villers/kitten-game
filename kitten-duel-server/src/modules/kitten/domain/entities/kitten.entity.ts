@@ -8,9 +8,15 @@ export class Kitten {
   equipmentIds: string[];
   victories: number;
   defeats: number;
-  level: number;
+  level: number = 1;
+  xp: number = 0; // Experience points accumulated by the kitten
+  availableAttributePoints: number = 0; // Points available for distribution
 
   constructor(partial?: Partial<Kitten>) {
     Object.assign(this, partial);
+  }
+
+  isAlive(): boolean {
+    return this.hp > 0;
   }
 }

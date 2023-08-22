@@ -18,11 +18,23 @@ import {
 } from './domain/repositories/equipment.repository';
 import { FetchRivalController } from './infrastructure/presentation/api/controllers/fetch-rival.controller';
 import { FetchRivalUsecase } from './domain/usecases/fetch-rival.usecase';
+import { LevelUpController } from './infrastructure/presentation/api/controllers/level-up.controller';
+import { AssignAttributePointsUsecase } from './domain/usecases/assign-attribute-points.usecase';
 
 @Module({
   imports: [],
-  controllers: [OrganizeFightController, FetchRivalController],
+  controllers: [
+    OrganizeFightController,
+    FetchRivalController,
+    LevelUpController,
+  ],
   providers: [
+    {
+      provide: AssignAttributePointsUsecase,
+      useFactory: (kittenRepository: KittenRepository) =>
+        new AssignAttributePointsUsecase(kittenRepository),
+      inject: [KITTEN_REPOSITORY],
+    },
     {
       provide: OrganizeFightUsecase,
       useFactory: (
