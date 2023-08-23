@@ -4,9 +4,11 @@ import { KittenNotFoundException } from '../exceptions/KittenNotFoundException';
 import { KittenAddAttributePointsException } from '../exceptions/KittenAddAttributePointsException';
 
 export type AssignAttributePointsInput = {
-  hpPoints: number; // Points to be added to HP
-  powerPoints: number; // Points to be added to Power
-  defensePoints: number; // Points to be added to Defense
+  vitality: number;
+  agility: number;
+  dexterity: number;
+  force: number;
+  luck: number;
 };
 
 export type AssignAttributePointsOutput = {
@@ -26,16 +28,22 @@ export class AssignAttributePointsUsecase {
     }
 
     const nbPoints =
-      assignData.hpPoints + assignData.powerPoints + assignData.defensePoints;
+      assignData.vitality +
+      assignData.agility +
+      assignData.dexterity +
+      assignData.force +
+      assignData.luck;
 
     if (nbPoints > kitten.availableAttributePoints) {
       throw new KittenAddAttributePointsException(kittenId);
     }
 
     // Assigning the attribute points
-    kitten.hp += assignData.hpPoints;
-    kitten.power += assignData.powerPoints;
-    kitten.defense += assignData.defensePoints;
+    kitten.vitality += assignData.vitality;
+    kitten.agility += assignData.agility;
+    kitten.dexterity += assignData.dexterity;
+    kitten.force += assignData.force;
+    kitten.luck += assignData.luck;
     kitten.availableAttributePoints -= nbPoints;
 
     await this.kittenRepository.save(kitten);

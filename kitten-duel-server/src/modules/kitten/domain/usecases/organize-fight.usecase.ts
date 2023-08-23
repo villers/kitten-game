@@ -1,9 +1,13 @@
+import { EquipmentRepository } from '../repositories/equipment.repository';
+import { FightRepository } from '../repositories/fight.repository';
+import { KittenRepository } from '../repositories/kitten.repository';
 import { FightEntity, FightStep } from '../entities/fight.entity';
 import { Kitten } from '../entities/kitten.entity';
-import { Equipment } from '../entities/equipment.entity';
-import { FightRepository } from '../repositories/fight.repository';
-import { EquipmentRepository } from '../repositories/equipment.repository';
-import { KittenRepository } from '../repositories/kitten.repository';
+import { Pounce } from '../skills/pounce';
+import { NapTime } from '../skills/nap-time';
+
+const BASE_XP = 100;
+const LEVEL_UP_ATTRIBUTE_POINTS = 5;
 
 export type OrganizeFightInput = {
   kittenAId: string;
@@ -22,148 +26,143 @@ export class OrganizeFightUsecase {
   ) {}
 
   async execute(inputs: OrganizeFightInput): Promise<OrganizeFightOutput> {
-    const originalKittenA = await this.kittenRepository.findById(
-      inputs.kittenAId,
-    );
-    const originalKittenB = await this.kittenRepository.findById(
-      inputs.kittenBId,
-    );
+    const [originalKittenA, originalKittenB] = await Promise.all([
+      this.kittenRepository.findById(inputs.kittenAId),
+      this.kittenRepository.findById(inputs.kittenBId),
+    ]);
 
-    const duel = this.initializeDuel(originalKittenA, originalKittenB);
+    const [attacker, defender] =
+      originalKittenA.agility > originalKittenB.agility
+        ? [new Kitten(originalKittenA), new Kitten(originalKittenB)]
+        : [new Kitten(originalKittenB), new Kitten(originalKittenA)];
 
-    let attacker = new Kitten(originalKittenA);
-    let defender = new Kitten(originalKittenB);
-
+    const duel = new FightEntity({ kitten1: attacker, kitten2: defender });
     while (attacker.isAlive() && defender.isAlive()) {
-      const attackDetail = await this.performAttack(attacker, defender);
-      duel.steps.push(attackDetail);
-      [attacker, defender] = [defender, attacker]; // Swap roles
+      const attackDetails = await this.performAttackWithSkills(
+        attacker,
+        defender,
+      );
+      for (const attackDetail of attackDetails) {
+        duel.addStep(
+          attacker,
+          defender,
+          attackDetail.action,
+          attackDetail.damageDealt,
+          attackDetail.description,
+        );
+      }
     }
 
-    this.finalizeDuelAndUpdateKittens(
-      duel,
-      originalKittenA,
-      originalKittenB,
-      attacker,
-      defender,
+    duel.setOutcome(attacker, defender);
+
+    const xpGained = this.calculateXpGained(
+      duel.winner.level,
+      duel.looser.level,
     );
 
-    await this.fightRepository.save(duel);
-    await this.kittenRepository.save(originalKittenA);
-    await this.kittenRepository.save(originalKittenB);
+    if (duel.winner.id === originalKittenA.id) {
+      originalKittenA.victories += 1;
+      originalKittenA.xp += xpGained;
+      originalKittenB.defeats += 1;
+      this.checkForLevelUpAndAssignPoints(originalKittenA);
+    }
+    if (duel.winner.id === originalKittenB.id) {
+      originalKittenB.victories += 1;
+      originalKittenB.xp += xpGained;
+      originalKittenA.defeats += 1;
+      this.checkForLevelUpAndAssignPoints(originalKittenB);
+    }
+
+    await Promise.all([
+      this.fightRepository.save(duel),
+      this.kittenRepository.save(originalKittenA),
+      this.kittenRepository.save(originalKittenB),
+    ]);
 
     return { fight: duel };
   }
 
-  private initializeDuel(kittenA: Kitten, kittenB: Kitten): FightEntity {
-    const duel = new FightEntity();
-    duel.kitten1 = kittenA;
-    duel.kitten2 = kittenB;
-    duel.steps = [];
-    return duel;
-  }
-
-  private finalizeDuelAndUpdateKittens(
-    duel: FightEntity,
-    kittenA: Kitten,
-    kittenB: Kitten,
+  private async performAttackWithSkills(
     attacker: Kitten,
     defender: Kitten,
-  ): void {
-    const winnerKitten = attacker.isAlive() ? attacker : defender;
-    const looserKitten = attacker.isAlive() ? defender : attacker;
+  ): Promise<FightStep[]> {
+    const steps: FightStep[] = [];
 
-    duel.winner = winnerKitten;
-    duel.looser = looserKitten;
+    // Vérification de l'activation de la compétence Pounce
+    if (Pounce.isActive()) {
+      steps.push(Pounce.execute(attacker, defender));
+    } else {
+      steps.push(await this.performAttack(attacker, defender));
+    }
 
-    const winner = winnerKitten.id === kittenA.id ? kittenA : kittenB;
-    const looser = winnerKitten.id === kittenA.id ? kittenB : kittenA;
+    // Vérification de l'activation de la compétence NapTime pour le défenseur
+    if (NapTime.isActive()) {
+      steps.push(NapTime.execute(defender));
+    }
 
-    winner.victories = (winner.victories || 0) + 1;
-    looser.defeats = (looser.defeats || 0) + 1;
-
-    const xpGained = this.calculateXpGained(winner.level, looser.level);
-    winner.xp += xpGained;
-    this.checkForLevelUpAndAssignPoints(winner);
+    return steps;
   }
 
   private async performAttack(
     attacker: Kitten,
     defender: Kitten,
   ): Promise<FightStep> {
-    const attackerEquipments = await this.equipmentService.findByIds(
-      attacker.equipmentIds,
-    );
-    const defenderEquipments = await this.equipmentService.findByIds(
-      defender.equipmentIds,
-    );
-    const attackerEquipmentPower =
-      this.calculateEquipmentPower(attackerEquipments);
-    const defenderEquipmentDefense =
-      this.calculateEquipmentDefense(defenderEquipments);
+    const hitChance = Math.random() * 100;
+    const dodgeChance = Math.random() * 100;
+    const criticalChance = Math.random() * 100;
 
-    // Calculate total attack power with variability
-    const baseAttackPower = attacker.power + attackerEquipmentPower;
-    const variability = (baseAttackPower * (Math.random() - 0.5)) / 2;
-    const totalAttackPower = baseAttackPower + variability;
-
-    // Ensure damage isn't negative and factor in defender's intrinsic and equipment defense
-    const totalDefense = defender.defense + defenderEquipmentDefense;
-    const damageToDefender = Math.max(totalAttackPower - totalDefense, 0);
-    defender.hp -= damageToDefender;
-
-    return {
-      attackPower: totalAttackPower,
-      attacker: attacker,
-      defender: defender,
-    };
+    if (
+      hitChance <= attacker.getHitChance() &&
+      dodgeChance > defender.getDodgeChance()
+    ) {
+      const isCritical = criticalChance <= attacker.getCriticalChance();
+      const damage = isCritical
+        ? attacker.getAttackPower() * 1.5
+        : attacker.getAttackPower();
+      defender.hp -= damage;
+      return new FightStep(
+        attacker,
+        defender,
+        isCritical ? 'coup critique' : 'attaque',
+        damage,
+        isCritical ? 'Coup critique!' : 'Attaque réussie!',
+      );
+    } else if (dodgeChance <= defender.getDodgeChance()) {
+      return new FightStep(
+        attacker,
+        defender,
+        'esquive',
+        0,
+        'Esquive réussie!',
+      );
+    } else {
+      return new FightStep(attacker, defender, 'raté', 0, 'Attaque manquée!');
+    }
   }
 
   private checkForLevelUpAndAssignPoints(kitten: Kitten): void {
-    const xpRequiredForNextLevel = kitten.level ** 2 * 100;
-    if (kitten.xp >= xpRequiredForNextLevel) {
+    const xpRequiredForNextLevel = kitten.level ** 2 * BASE_XP;
+    while (kitten.xp >= xpRequiredForNextLevel) {
       kitten.level++;
       kitten.xp -= xpRequiredForNextLevel;
-      kitten.availableAttributePoints += 5;
+      kitten.availableAttributePoints += LEVEL_UP_ATTRIBUTE_POINTS;
     }
-  }
-
-  private calculateEquipmentPower(equipments: Equipment[]): number {
-    return equipments.reduce(
-      (total, equipment) => total + (equipment.powerBoost || 0),
-      0,
-    );
   }
 
   private calculateXpGained(winnerLevel: number, loserLevel: number): number {
-    const levelDifference = loserLevel - winnerLevel;
-    const baseXp = 100;
-
-    // XP multiplier based on level difference
-    let multiplier: number;
-    if (levelDifference >= 5) {
-      multiplier = 1.5;
-    } else if (levelDifference >= 3) {
-      multiplier = 1.3;
-    } else if (levelDifference >= 1) {
-      multiplier = 1.1;
-    } else if (levelDifference === 0) {
-      multiplier = 1.0;
-    } else if (levelDifference <= -1) {
-      multiplier = 0.9;
-    } else if (levelDifference <= -3) {
-      multiplier = 0.7;
-    } else {
-      multiplier = 0.5;
-    }
-
-    return baseXp * multiplier;
+    return BASE_XP * this.getXpMultiplier(winnerLevel, loserLevel);
   }
 
-  private calculateEquipmentDefense(equipments: Equipment[]): number {
-    return equipments.reduce(
-      (total, equipment) => total + (equipment.defenseBoost || 0),
-      0,
-    );
+  private getXpMultiplier(winnerLevel: number, loserLevel: number): number {
+    const levelDifference = loserLevel - winnerLevel;
+
+    if (levelDifference >= 5) return 1.5;
+    if (levelDifference >= 3) return 1.3;
+    if (levelDifference >= 1) return 1.1;
+    if (levelDifference === 0) return 1.0;
+    if (levelDifference <= -1) return 0.9;
+    if (levelDifference <= -3) return 0.7;
+
+    return 0.5;
   }
 }

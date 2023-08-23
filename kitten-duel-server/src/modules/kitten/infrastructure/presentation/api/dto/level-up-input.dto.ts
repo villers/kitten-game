@@ -2,9 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class LevelUpInputDto {
   @ApiProperty()
-  hpPoints: number; // Points to be added to HP
+  vitality: number;
   @ApiProperty()
-  powerPoints: number; // Points to be added to Power
+  agility: number;
   @ApiProperty()
-  defensePoints: number; // Points to be added to Defense
+  dexterity: number;
+  @ApiProperty()
+  force: number;
+  @ApiProperty()
+  luck: number;
 }

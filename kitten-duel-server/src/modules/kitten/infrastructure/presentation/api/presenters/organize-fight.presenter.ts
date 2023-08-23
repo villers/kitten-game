@@ -7,64 +7,54 @@ class Kitten {
 
   @ApiProperty()
   name: string;
-
-  @ApiProperty()
-  power: number;
-
   @ApiProperty()
   hp: number;
-
   @ApiProperty()
-  defense: number;
-
+  force: number;
   @ApiProperty()
-  speed: number;
-
+  dexterity: number;
   @ApiProperty()
-  equipmentIds: string[];
-
+  vitality: number;
+  @ApiProperty()
+  luck: number;
+  @ApiProperty()
+  agility: number;
   @ApiProperty()
   level: number;
-
   @ApiProperty()
   victories: number;
-
   @ApiProperty()
   defeats: number;
-
   @ApiProperty()
   xp: number;
 }
 
-class Step {
+class FightStep {
+  @ApiProperty()
+  action: string;
   @ApiProperty()
   attacker: Kitten;
-
   @ApiProperty()
   defender: Kitten;
-
   @ApiProperty()
-  attackPower: number;
+  damageDealt: number;
+  @ApiProperty()
+  description: string;
 }
 
 export class OrganizeFightPresenter {
   @ApiProperty()
   id: string;
-
   @ApiProperty()
   kitten1: Kitten;
-
   @ApiProperty()
   kitten2: Kitten;
-
   @ApiProperty()
   winner: Kitten;
-
   @ApiProperty()
   looser: Kitten;
-
-  @ApiProperty({ type: [Step] }) // To specify that it's an array of steps
-  steps: Step[];
+  @ApiProperty({ type: [FightStep] }) // To specify that it's an array of steps
+  steps: FightStep[] = [];
 
   static toPresent(output: OrganizeFightOutput): OrganizeFightPresenter {
     return {

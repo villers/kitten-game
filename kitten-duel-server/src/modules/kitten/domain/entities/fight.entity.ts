@@ -1,12 +1,24 @@
 import { Kitten } from './kitten.entity';
 
 export class FightStep {
-  attackPower: number;
+  action: string; // Stockera l'action effectuée, par exemple, 'attaque', 'esquive', 'coup critique', etc.
   attacker: Kitten;
   defender: Kitten;
+  damageDealt: number;
+  description: string; // Texte descriptif pour l'action
 
-  constructor(partial?: Partial<FightStep>) {
-    Object.assign(this, partial);
+  constructor(
+    attacker: Kitten,
+    defender: Kitten,
+    action: string,
+    damageDealt: number,
+    description: string,
+  ) {
+    this.attacker = attacker;
+    this.defender = defender;
+    this.action = action;
+    this.damageDealt = damageDealt;
+    this.description = description;
   }
 }
 
@@ -16,9 +28,26 @@ export class FightEntity {
   kitten2: Kitten;
   winner: Kitten;
   looser: Kitten;
-  steps: FightStep[];
+  steps: FightStep[] = [];
 
   constructor(partial?: Partial<FightEntity>) {
     Object.assign(this, partial);
+  }
+
+  setOutcome(attacker: Kitten, defender: Kitten): void {
+    this.winner = attacker.isAlive() ? attacker : defender;
+    this.looser = attacker.isAlive() ? defender : attacker;
+  }
+
+  addStep(
+    attacker: Kitten,
+    defender: Kitten,
+    action: string,
+    damageDealt: number,
+    description: string,
+  ): void {
+    this.steps.push(
+      new FightStep(attacker, defender, action, damageDealt, description),
+    );
   }
 }
