@@ -48,23 +48,26 @@ export class OrganizeFightPresenter {
   @ApiProperty()
   id: string;
   @ApiProperty()
-  kitten1: Kitten;
+  attacker: Kitten;
   @ApiProperty()
-  kitten2: Kitten;
+  defender: Kitten;
   @ApiProperty()
   winner: Kitten;
   @ApiProperty()
   looser: Kitten;
+  @ApiProperty()
+  expGained: number;
   @ApiProperty({ type: [FightStep] }) // To specify that it's an array of steps
   steps: FightStep[] = [];
 
   static toPresent(output: OrganizeFightOutput): OrganizeFightPresenter {
     return {
       id: output.fight.id,
-      kitten1: output.fight.kitten1,
-      kitten2: output.fight.kitten2,
+      attacker: output.fight.attacker,
+      defender: output.fight.defender,
       winner: output.fight.winner,
       looser: output.fight.looser,
+      expGained: output.fight.xpGained,
       steps: output.fight.steps,
     };
   }

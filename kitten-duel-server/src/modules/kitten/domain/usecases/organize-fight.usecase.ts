@@ -10,12 +10,9 @@ import { NineLives } from '../skills/nine-lives';
 import { SharpClaws } from '../skills/sharp-claws';
 import { Distract, Hairball, PurrHealing } from '../skills/hairball';
 
-const BASE_XP = 100;
-const LEVEL_UP_ATTRIBUTE_POINTS = 5;
-
 export type OrganizeFightInput = {
-  kittenAId: string;
-  kittenBId: string;
+  attackerId: string;
+  defenderId: string;
 };
 
 export type OrganizeFightOutput = {
@@ -30,28 +27,23 @@ export class OrganizeFightUsecase {
   ) {}
 
   async execute(inputs: OrganizeFightInput): Promise<OrganizeFightOutput> {
-    const [originalKittenA, originalKittenB] = await Promise.all([
-      this.kittenRepository.findById(inputs.kittenAId),
-      this.kittenRepository.findById(inputs.kittenBId),
+    const [originalAttacker, originalDefender] = await Promise.all([
+      this.kittenRepository.findById(inputs.attackerId),
+      this.kittenRepository.findById(inputs.defenderId),
     ]);
 
     const [attacker, defender] =
-      originalKittenA.agility > originalKittenB.agility
-        ? [new Kitten(originalKittenA), new Kitten(originalKittenB)]
-        : [new Kitten(originalKittenB), new Kitten(originalKittenA)];
+      originalAttacker.agility > originalDefender.agility
+        ? [new Kitten(originalAttacker), new Kitten(originalDefender)]
+        : [new Kitten(originalDefender), new Kitten(originalAttacker)];
 
-    const duel = new FightEntity({ kitten1: attacker, kitten2: defender });
+    const duel = new FightEntity({
+      attacker: new Kitten(originalAttacker),
+      defender: new Kitten(originalDefender),
+    });
     while (attacker.isAlive() && defender.isAlive()) {
       const roundDetails = await this.performOneRound(attacker, defender);
-      for (const roundDetail of roundDetails) {
-        duel.addStep(
-          roundDetail.attacker,
-          roundDetail.defender,
-          roundDetail.action,
-          roundDetail.damageDealt,
-          roundDetail.description,
-        );
-      }
+      duel.addSteps(roundDetails);
 
       // Update buffs at the end of the full round
       attacker.updateBuffs();
@@ -60,30 +52,18 @@ export class OrganizeFightUsecase {
 
     duel.setOutcome(attacker, defender);
 
-    const xpGained = this.calculateXpGained(
-      duel.winner.level,
-      duel.looser.level,
-    );
-
-    if (duel.winner.id === originalKittenA.id) {
-      originalKittenA.victories += 1;
-      originalKittenA.xp += xpGained;
-      originalKittenB.defeats += 1;
-      this.checkForLevelUpAndAssignPoints(originalKittenA);
+    if (duel.winner.id === originalAttacker.id) {
+      originalAttacker.setWinner(duel.xpGained);
+      originalDefender.setLoser();
+    } else {
+      originalDefender.setWinner(duel.xpGained);
+      originalAttacker.setLoser();
     }
-    if (duel.winner.id === originalKittenB.id) {
-      originalKittenB.victories += 1;
-      originalKittenB.xp += xpGained;
-      originalKittenA.defeats += 1;
-      this.checkForLevelUpAndAssignPoints(originalKittenB);
-    }
-
-    console.log(duel.steps.length);
 
     await Promise.all([
       this.fightRepository.save(duel),
-      this.kittenRepository.save(originalKittenA),
-      this.kittenRepository.save(originalKittenB),
+      this.kittenRepository.save(originalAttacker),
+      this.kittenRepository.save(originalDefender),
     ]);
 
     return { fight: duel };
@@ -189,31 +169,5 @@ export class OrganizeFightUsecase {
     } else {
       return new FightStep(attacker, defender, 'raté', 0, 'Attaque manquée!');
     }
-  }
-
-  private checkForLevelUpAndAssignPoints(kitten: Kitten): void {
-    const xpRequiredForNextLevel = kitten.level ** 2 * BASE_XP;
-    while (kitten.xp >= xpRequiredForNextLevel) {
-      kitten.level++;
-      kitten.xp -= xpRequiredForNextLevel;
-      kitten.availableAttributePoints += LEVEL_UP_ATTRIBUTE_POINTS;
-    }
-  }
-
-  private calculateXpGained(winnerLevel: number, loserLevel: number): number {
-    return BASE_XP * this.getXpMultiplier(winnerLevel, loserLevel);
-  }
-
-  private getXpMultiplier(winnerLevel: number, loserLevel: number): number {
-    const levelDifference = loserLevel - winnerLevel;
-
-    if (levelDifference >= 5) return 1.5;
-    if (levelDifference >= 3) return 1.3;
-    if (levelDifference >= 1) return 1.1;
-    if (levelDifference === 0) return 1.0;
-    if (levelDifference <= -1) return 0.9;
-    if (levelDifference <= -3) return 0.7;
-
-    return 0.5;
   }
 }

@@ -6,7 +6,7 @@ import { FightStep } from '../entities/fight.entity';
  *
  * SharpClaws (Griffes acérées):
  * activationChance : 15%
- * Effet : Reçoit un buff GriffesAcerées qui augmente ses dégâts pendant 3 tours.
+ * Effet : Reçoit un buff GriffesAcerées qui augmente ses dégâts de 50% pendant 3 tours.
  * Description : "Griffes acérées! Augmentation des dégâts pendant 3 tours."
  *
  * Hairball (Boule de poils):
@@ -31,7 +31,7 @@ import { FightStep } from '../entities/fight.entity';
  *
  * NineLives (Neuf vies):
  * activationChance : Seulement si le chaton a 10% ou moins de ses points de vie et n'a pas déjà utilisé cette compétence.
- * Effet : Récupère le chaton à 50% de ses points de vie max.
+ * Effet : Soigne le chaton à 50% de ses points de vie max.
  * Description : "Neuf vies! Récupération à 50% de la santé."
  *
  *  Pounce (Attaque Surprise):

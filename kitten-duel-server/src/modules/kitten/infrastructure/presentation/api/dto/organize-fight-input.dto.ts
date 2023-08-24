@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class OrganizeFightInputDto {
   @ApiProperty()
-  kittenAId: string;
+  attackerId: string;
   @ApiProperty()
-  kittenBId: string;
+  defenderId: string;
 }

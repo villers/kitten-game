@@ -1,3 +1,6 @@
+export const BASE_XP = 100;
+const LEVEL_UP_ATTRIBUTE_POINTS = 5;
+
 export class Kitten {
   id: string;
   name: string;
@@ -19,6 +22,7 @@ export class Kitten {
 
   constructor(partial?: Partial<Kitten>) {
     Object.assign(this, partial);
+    this.activeBuffs = { ...partial?.activeBuffs };
     this.maxHp = this.vitality * 10; // Assuming each vitality point gives 10 HP
     if (!this.hp) {
       // If current hp is not set, set it to maxHp
@@ -39,11 +43,13 @@ export class Kitten {
   }
 
   getHitChance(): number {
-    return this.dexterity * 2; // Convert dexterity to hit chance percentage
+    // return this.dexterity * 2; // Convert dexterity to hit chance percentage
+    return 100;
   }
 
   getDodgeChance(): number {
-    return this.agility * 2; // Convert agility to dodge chance percentage
+    // return this.agility * 2; // Convert agility to dodge chance percentage
+    return 0;
   }
 
   getCriticalChance(): number {
@@ -64,6 +70,32 @@ export class Kitten {
       if (this.activeBuffs[buff] <= 0) {
         delete this.activeBuffs[buff];
       }
+    }
+  }
+
+  /**
+   * Set number of victories and xp gained for the winner kitten
+   * @param xpGained
+   */
+  public setWinner(xpGained: number): void {
+    this.victories += 1;
+    this.xp += xpGained;
+    this.checkForLevelUpAndAssignPoints();
+  }
+
+  /**
+   * Set number of defeats for the loser kitten
+   * */
+  public setLoser(): void {
+    this.defeats += 1;
+  }
+
+  private checkForLevelUpAndAssignPoints(): void {
+    const xpRequiredForNextLevel = this.level ** 2 * BASE_XP;
+    while (this.xp >= xpRequiredForNextLevel) {
+      this.level++;
+      this.xp -= xpRequiredForNextLevel;
+      this.availableAttributePoints += LEVEL_UP_ATTRIBUTE_POINTS;
     }
   }
 }
