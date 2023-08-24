@@ -20,6 +20,8 @@ import { FetchRivalController } from './infrastructure/presentation/api/controll
 import { FetchRivalUsecase } from './domain/usecases/fetch-rival.usecase';
 import { LevelUpController } from './infrastructure/presentation/api/controllers/level-up.controller';
 import { AssignAttributePointsUsecase } from './domain/usecases/assign-attribute-points.usecase';
+import { FightService } from './domain/services/fight.service';
+import { SkillRegistry } from './domain/skills/skill.registry';
 
 @Module({
   imports: [],
@@ -41,19 +43,30 @@ import { AssignAttributePointsUsecase } from './domain/usecases/assign-attribute
         equipmentRepository: EquipmentRepository,
         fightRepository: FightRepository,
         kittenRepository: KittenRepository,
+        fightService: FightService,
       ) =>
         new OrganizeFightUsecase(
           equipmentRepository,
           fightRepository,
           kittenRepository,
+          fightService,
         ),
-      inject: [EQUIPMENT_REPOSITORY, FIGHT_REPOSITORY, KITTEN_REPOSITORY],
+      inject: [
+        EQUIPMENT_REPOSITORY,
+        FIGHT_REPOSITORY,
+        KITTEN_REPOSITORY,
+        FightService,
+      ],
     },
     {
       provide: FetchRivalUsecase,
       useFactory: (kittenRepository: KittenRepository) =>
         new FetchRivalUsecase(kittenRepository),
       inject: [KITTEN_REPOSITORY],
+    },
+    {
+      provide: FightService,
+      useFactory: () => new FightService(new SkillRegistry()),
     },
     { provide: KITTEN_REPOSITORY, useClass: KittenRepositoryImpl },
     { provide: EQUIPMENT_REPOSITORY, useClass: EquipmentRepositoryImpl },
