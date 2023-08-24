@@ -1,20 +1,28 @@
-import { Kitten } from '../entities/kitten.entity';
 import { FightStep } from '../entities/fight.entity';
-import { Skill } from './skill.interface';
+import { Skill, SkillArgs } from './skill.interface';
+import { BuffService } from '../services/buff.service';
+import { RandomService } from '../services/random.service';
 
 export class Pounce implements Skill {
   static activationChance = 10;
 
-  isActive(attacker: Kitten, defender: Kitten): boolean {
+  constructor(
+    private buffService: BuffService,
+    private randomService: RandomService,
+  ) {}
+
+  isActive({ attacker }: SkillArgs): boolean {
     return (
-      Math.random() * 100 < Pounce.activationChance &&
-      !attacker.hasBuff('GriffesAcerées')
+      this.randomService.numberBelow(100) < Pounce.activationChance &&
+      !this.buffService
+        .getBuffsForKitten(attacker)
+        .some((buff) => buff.name === 'GriffesAcerées')
     );
   }
 
-  execute(attacker: Kitten, defender: Kitten): FightStep {
+  execute({ attacker, defender }: SkillArgs): FightStep {
     const damage = attacker.getAttackPower();
-    defender.hp -= damage;
+    defender.dealDamage(damage);
     return new FightStep(
       attacker,
       defender,

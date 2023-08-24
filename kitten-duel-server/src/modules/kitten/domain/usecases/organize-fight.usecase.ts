@@ -2,8 +2,8 @@ import { EquipmentRepository } from '../repositories/equipment.repository';
 import { FightRepository } from '../repositories/fight.repository';
 import { KittenRepository } from '../repositories/kitten.repository';
 import { FightEntity } from '../entities/fight.entity';
-import { Kitten } from '../entities/kitten.entity';
 import { FightService } from '../services/fight.service';
+import { BuffService } from '../services/buff.service';
 
 export type OrganizeFightInput = {
   attackerId: string;
@@ -20,6 +20,7 @@ export class OrganizeFightUsecase {
     private fightRepository: FightRepository,
     private kittenRepository: KittenRepository,
     private fightService: FightService,
+    private buffService: BuffService,
   ) {}
 
   async execute(inputs: OrganizeFightInput): Promise<OrganizeFightOutput> {
@@ -30,13 +31,14 @@ export class OrganizeFightUsecase {
 
     const [attacker, defender] =
       originalAttacker.agility > originalDefender.agility
-        ? [new Kitten(originalAttacker), new Kitten(originalDefender)]
-        : [new Kitten(originalDefender), new Kitten(originalAttacker)];
+        ? [originalAttacker.clone(), originalDefender.clone()] // Use clone method
+        : [originalDefender.clone(), originalAttacker.clone()]; // Use clone method
 
     const duel = new FightEntity({
-      attacker: new Kitten(originalAttacker),
-      defender: new Kitten(originalDefender),
+      attacker: originalAttacker.clone(),
+      defender: originalDefender.clone(),
     });
+
     while (attacker.isAlive() && defender.isAlive()) {
       const roundDetails = this.fightService.performOneRound(
         attacker,
@@ -44,9 +46,8 @@ export class OrganizeFightUsecase {
       );
       duel.addSteps(roundDetails);
 
-      // Update buffs at the end of the full round
-      attacker.updateBuffs();
-      defender.updateBuffs();
+      // Update buffs at the end of the full round using BuffService
+      this.buffService.updateBuffDurations();
     }
 
     duel.setOutcome(attacker, defender);

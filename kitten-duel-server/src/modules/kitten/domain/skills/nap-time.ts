@@ -1,17 +1,19 @@
-import { Skill } from './skill.interface';
-import { Kitten } from '../entities/kitten.entity';
+import { Skill, SkillArgs } from './skill.interface';
 import { FightStep } from '../entities/fight.entity';
+import { RandomService } from '../services/random.service';
 
 export class NapTime implements Skill {
   static activationChance = 20;
   static healAmount = 10;
 
-  isActive(attacker: Kitten): boolean {
-    return Math.random() * 100 < NapTime.activationChance;
+  constructor(private randomService: RandomService) {}
+
+  isActive({}: SkillArgs): boolean {
+    return this.randomService.numberBelow(100) < NapTime.activationChance;
   }
 
-  execute(attacker: Kitten): FightStep {
-    attacker.hp += NapTime.healAmount;
+  execute({ attacker }: SkillArgs): FightStep {
+    attacker.heal(NapTime.healAmount);
     return new FightStep(
       attacker,
       null,

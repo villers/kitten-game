@@ -22,6 +22,15 @@ import { LevelUpController } from './infrastructure/presentation/api/controllers
 import { AssignAttributePointsUsecase } from './domain/usecases/assign-attribute-points.usecase';
 import { FightService } from './domain/services/fight.service';
 import { SkillRegistry } from './domain/skills/skill.registry';
+import { RandomService } from './domain/services/random.service';
+import { BuffService } from './domain/services/buff.service';
+import { Pounce } from './domain/skills/pounce';
+import { NapTime } from './domain/skills/nap-time';
+import { NineLives } from './domain/skills/nine-lives';
+import { SharpClaws } from './domain/skills/sharp-claws';
+import { Hairball } from './domain/skills/hairball';
+import { PurrHealing } from './domain/skills/pure-healing';
+import { Distract } from './domain/skills/distract';
 
 @Module({
   imports: [],
@@ -44,18 +53,21 @@ import { SkillRegistry } from './domain/skills/skill.registry';
         fightRepository: FightRepository,
         kittenRepository: KittenRepository,
         fightService: FightService,
+        buffService: BuffService,
       ) =>
         new OrganizeFightUsecase(
           equipmentRepository,
           fightRepository,
           kittenRepository,
           fightService,
+          buffService,
         ),
       inject: [
         EQUIPMENT_REPOSITORY,
         FIGHT_REPOSITORY,
         KITTEN_REPOSITORY,
         FightService,
+        BuffService,
       ],
     },
     {
@@ -66,7 +78,36 @@ import { SkillRegistry } from './domain/skills/skill.registry';
     },
     {
       provide: FightService,
-      useFactory: () => new FightService(new SkillRegistry()),
+      useFactory: (
+        skillRegistry: SkillRegistry,
+        randomService: RandomService,
+        buffService: BuffService,
+      ) => new FightService(skillRegistry, randomService, buffService),
+      inject: [SkillRegistry, RandomService, BuffService],
+    },
+    {
+      provide: SkillRegistry,
+      useFactory: (buffService: BuffService, randomService: RandomService) => {
+        const registry = new SkillRegistry();
+        registry.register(new Pounce(buffService, randomService));
+        registry.register(new NapTime(randomService));
+        registry.register(new NineLives(buffService));
+        registry.register(new SharpClaws(buffService, randomService));
+        registry.register(new Hairball(randomService));
+        registry.register(new PurrHealing(randomService));
+        registry.register(new Distract(buffService, randomService));
+
+        return registry;
+      },
+      inject: [BuffService, RandomService],
+    },
+    {
+      provide: RandomService,
+      useFactory: () => new RandomService(),
+    },
+    {
+      provide: BuffService,
+      useFactory: () => new BuffService(),
     },
     { provide: KITTEN_REPOSITORY, useClass: KittenRepositoryImpl },
     { provide: EQUIPMENT_REPOSITORY, useClass: EquipmentRepositoryImpl },

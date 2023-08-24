@@ -39,7 +39,13 @@ import { FightStep } from '../entities/fight.entity';
  * Effet : Inflige des dégâts basés sur la puissance d'attaque du chaton.
  * Description : "Attaque Surprise réussie!"
  */
+export interface SkillArgs {
+  attacker?: Kitten;
+  defender?: Kitten;
+  // ... other properties
+}
+
 export interface Skill {
-  isActive(attacker: Kitten, defender: Kitten): boolean;
-  execute(attacker: Kitten, defender: Kitten): FightStep;
+  isActive({ attacker, defender }: SkillArgs): boolean;
+  execute({ attacker, defender }: SkillArgs): FightStep;
 }

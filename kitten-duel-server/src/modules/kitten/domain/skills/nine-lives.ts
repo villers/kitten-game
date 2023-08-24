@@ -1,17 +1,27 @@
-import { Skill } from './skill.interface';
-import { Kitten } from '../entities/kitten.entity';
+import { Skill, SkillArgs } from './skill.interface';
 import { FightStep } from '../entities/fight.entity';
+import { BuffService } from '../services/buff.service';
 
 export class NineLives implements Skill {
-  isActive(attacker: Kitten): boolean {
+  constructor(private buffService: BuffService) {}
+
+  isActive({ attacker }: SkillArgs): boolean {
     return (
-      attacker.hp <= attacker.maxHp * 0.1 && !attacker.hasBuff('NineLives')
+      attacker.hp <= attacker.maxHp * 0.1 &&
+      !this.buffService
+        .getBuffsForKitten(attacker)
+        .some((buff) => buff.name === 'NineLives')
     );
   }
 
-  execute(attacker: Kitten): FightStep {
+  execute({ attacker }: SkillArgs): FightStep {
     attacker.hp = attacker.maxHp * 0.5;
-    attacker.applyBuff('NineLives', 1); // Ensure this skill can't be used again in the same fight
+    // Ensure this skill can't be used again in the same fight
+    this.buffService.applyBuff(attacker, {
+      name: 'NineLives',
+      duration: 1,
+      effect: null,
+    });
     return new FightStep(
       attacker,
       null,

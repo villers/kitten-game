@@ -1,16 +1,26 @@
 import { FightStep } from '../entities/fight.entity';
-import { Kitten } from '../entities/kitten.entity';
-import { Skill } from './skill.interface';
+import { Skill, SkillArgs } from './skill.interface';
+import { BuffService } from '../services/buff.service';
+import { RandomService } from '../services/random.service';
 
 export class SharpClaws implements Skill {
   static activationChance = 15;
 
-  isActive(attacker: Kitten): boolean {
-    return Math.random() * 100 < SharpClaws.activationChance;
+  constructor(
+    private buffService: BuffService,
+    private randomService: RandomService,
+  ) {}
+
+  isActive({}: SkillArgs): boolean {
+    return this.randomService.numberBelow(100) < SharpClaws.activationChance;
   }
 
-  execute(attacker: Kitten): FightStep {
-    attacker.applyBuff('GriffesAcerées', 3); // Boost for 3 turns
+  execute({ attacker }: SkillArgs): FightStep {
+    this.buffService.applyBuff(attacker, {
+      name: 'GriffesAcerées',
+      duration: 3,
+      effect: null,
+    });
     return new FightStep(
       attacker,
       null,

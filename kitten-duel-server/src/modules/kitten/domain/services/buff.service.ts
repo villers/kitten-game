@@ -1,14 +1,18 @@
-// buff.service.ts
-
 import { Kitten } from '../entities/kitten.entity';
 
 export class Buff {
   constructor(
     public name: string,
     public duration: number,
-    public effect: any,
+    public effect: BuffEffect, // Using a BuffEffect type
   ) {}
 }
+
+// Define a type or interface for BuffEffect
+export type BuffEffect = {
+  type: 'increaseAttack' | 'reduceDefense' | 'heal' | 'damage'; // Sample types
+  value: number;
+};
 
 export class BuffService {
   private activeBuffs: Map<Kitten, Buff[]> = new Map();
@@ -33,5 +37,15 @@ export class BuffService {
     return this.activeBuffs.get(kitten) || [];
   }
 
-  // ... (autres méthodes, comme la mise à jour de la durée des buffs, etc.)
+  // New method to update buff durations
+  updateBuffDurations() {
+    for (const [kitten, buffs] of this.activeBuffs.entries()) {
+      for (const buff of buffs) {
+        buff.duration--;
+        if (buff.duration <= 0) {
+          this.removeBuff(kitten, buff.name);
+        }
+      }
+    }
+  }
 }
