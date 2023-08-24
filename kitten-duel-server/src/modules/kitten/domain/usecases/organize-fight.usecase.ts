@@ -4,7 +4,11 @@ import { KittenRepository } from '../repositories/kitten.repository';
 import { FightEntity, FightStep } from '../entities/fight.entity';
 import { Kitten } from '../entities/kitten.entity';
 import { Pounce } from '../skills/pounce';
+import { Skill } from '../skills/skill.interface';
 import { NapTime } from '../skills/nap-time';
+import { NineLives } from '../skills/nine-lives';
+import { SharpClaws } from '../skills/sharp-claws';
+import { Distract, Hairball, PurrHealing } from '../skills/hairball';
 
 const BASE_XP = 100;
 const LEVEL_UP_ATTRIBUTE_POINTS = 5;
@@ -38,19 +42,20 @@ export class OrganizeFightUsecase {
 
     const duel = new FightEntity({ kitten1: attacker, kitten2: defender });
     while (attacker.isAlive() && defender.isAlive()) {
-      const attackDetails = await this.performAttackWithSkills(
-        attacker,
-        defender,
-      );
-      for (const attackDetail of attackDetails) {
+      const roundDetails = await this.performOneRound(attacker, defender);
+      for (const roundDetail of roundDetails) {
         duel.addStep(
-          attacker,
-          defender,
-          attackDetail.action,
-          attackDetail.damageDealt,
-          attackDetail.description,
+          roundDetail.attacker,
+          roundDetail.defender,
+          roundDetail.action,
+          roundDetail.damageDealt,
+          roundDetail.description,
         );
       }
+
+      // Update buffs at the end of the full round
+      attacker.updateBuffs();
+      defender.updateBuffs();
     }
 
     duel.setOutcome(attacker, defender);
@@ -73,6 +78,8 @@ export class OrganizeFightUsecase {
       this.checkForLevelUpAndAssignPoints(originalKittenB);
     }
 
+    console.log(duel.steps.length);
+
     await Promise.all([
       this.fightRepository.save(duel),
       this.kittenRepository.save(originalKittenA),
@@ -82,22 +89,66 @@ export class OrganizeFightUsecase {
     return { fight: duel };
   }
 
+  private async performOneRound(
+    firstAttacker: Kitten,
+    secondAttacker: Kitten,
+  ): Promise<FightStep[]> {
+    let steps: FightStep[] = [];
+
+    // First kitten attacks second kitten
+    steps = steps.concat(
+      await this.performAttackWithSkills(firstAttacker, secondAttacker),
+    );
+
+    // Second kitten attacks first kitten
+    steps = steps.concat(
+      await this.performAttackWithSkills(secondAttacker, firstAttacker),
+    );
+
+    return steps;
+  }
+
   private async performAttackWithSkills(
     attacker: Kitten,
     defender: Kitten,
   ): Promise<FightStep[]> {
     const steps: FightStep[] = [];
 
-    // Vérification de l'activation de la compétence Pounce
-    if (Pounce.isActive()) {
-      steps.push(Pounce.execute(attacker, defender));
-    } else {
-      steps.push(await this.performAttack(attacker, defender));
+    // Check if the attacker is distracted
+    if (attacker.hasBuff('Distracted')) {
+      steps.push(
+        new FightStep(
+          attacker,
+          defender,
+          'distract',
+          0,
+          'Le chaton est distrait et saute son tour!',
+        ),
+      );
+      return steps;
     }
 
-    // Vérification de l'activation de la compétence NapTime pour le défenseur
-    if (NapTime.isActive()) {
-      steps.push(NapTime.execute(defender));
+    // Get a list of all skills available
+    const availableSkills: Skill[] = [
+      new Pounce(),
+      new NapTime(),
+      new NineLives(),
+      new SharpClaws(),
+      new Hairball(),
+      new PurrHealing(),
+      new Distract(),
+    ];
+
+    // Check if any of the skills are active and execute them
+    for (const skill of availableSkills) {
+      if (skill.isActive(attacker, defender)) {
+        steps.push(skill.execute(attacker, defender));
+      }
+    }
+
+    // If no skills were activated, perform a regular attack
+    if (steps.length === 0) {
+      steps.push(await this.performAttack(attacker, defender));
     }
 
     return steps;

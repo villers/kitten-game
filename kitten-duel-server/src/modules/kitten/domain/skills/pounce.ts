@@ -1,14 +1,18 @@
 import { Kitten } from '../entities/kitten.entity';
 import { FightStep } from '../entities/fight.entity';
+import { Skill } from './skill.interface';
 
-export class Pounce {
-  static activationChance = 10; // 10% de chance d'activation
+export class Pounce implements Skill {
+  static activationChance = 10;
 
-  static isActive(): boolean {
-    return Math.random() * 100 < this.activationChance;
+  isActive(attacker: Kitten, defender: Kitten): boolean {
+    return (
+      Math.random() * 100 < Pounce.activationChance &&
+      !attacker.hasBuff('GriffesAcerées')
+    );
   }
 
-  static execute(attacker: Kitten, defender: Kitten): FightStep {
+  execute(attacker: Kitten, defender: Kitten): FightStep {
     const damage = attacker.getAttackPower();
     defender.hp -= damage;
     return new FightStep(

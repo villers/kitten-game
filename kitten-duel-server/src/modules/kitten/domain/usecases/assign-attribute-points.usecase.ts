@@ -7,7 +7,7 @@ export type AssignAttributePointsInput = {
   vitality: number;
   agility: number;
   dexterity: number;
-  force: number;
+  strength: number;
   luck: number;
 };
 
@@ -31,7 +31,7 @@ export class AssignAttributePointsUsecase {
       assignData.vitality +
       assignData.agility +
       assignData.dexterity +
-      assignData.force +
+      assignData.strength +
       assignData.luck;
 
     if (nbPoints > kitten.availableAttributePoints) {
@@ -42,7 +42,7 @@ export class AssignAttributePointsUsecase {
     kitten.vitality += assignData.vitality;
     kitten.agility += assignData.agility;
     kitten.dexterity += assignData.dexterity;
-    kitten.force += assignData.force;
+    kitten.strength += assignData.strength;
     kitten.luck += assignData.luck;
     kitten.availableAttributePoints -= nbPoints;
 

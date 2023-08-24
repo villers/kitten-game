@@ -11,7 +11,7 @@ export class LevelUpPresenter {
   @ApiProperty()
   dexterity: number;
   @ApiProperty()
-  force: number;
+  strength: number;
   @ApiProperty()
   luck: number;
 
@@ -21,7 +21,7 @@ export class LevelUpPresenter {
       vitality: output.player.vitality,
       agility: output.player.agility,
       dexterity: output.player.dexterity,
-      force: output.player.force,
+      strength: output.player.strength,
       luck: output.player.luck,
     };
   }

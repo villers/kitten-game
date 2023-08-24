@@ -10,7 +10,9 @@ class Kitten {
   @ApiProperty()
   hp: number;
   @ApiProperty()
-  force: number;
+  maxHp: number;
+  @ApiProperty()
+  strength: number;
   @ApiProperty()
   dexterity: number;
   @ApiProperty()

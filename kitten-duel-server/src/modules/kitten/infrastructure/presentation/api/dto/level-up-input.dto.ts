@@ -8,7 +8,7 @@ export class LevelUpInputDto {
   @ApiProperty()
   dexterity: number;
   @ApiProperty()
-  force: number;
+  strength: number;
   @ApiProperty()
   luck: number;
 }

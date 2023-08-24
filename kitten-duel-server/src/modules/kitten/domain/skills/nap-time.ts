@@ -1,21 +1,22 @@
+import { Skill } from './skill.interface';
 import { Kitten } from '../entities/kitten.entity';
 import { FightStep } from '../entities/fight.entity';
 
-export class NapTime {
-  static activationChance = 20; // 20% de chance d'activation après avoir reçu une attaque
-  static healAmount = 10; // Soigne de 10 HP
+export class NapTime implements Skill {
+  static activationChance = 20;
+  static healAmount = 10;
 
-  static isActive(): boolean {
-    return Math.random() * 100 < this.activationChance;
+  isActive(attacker: Kitten): boolean {
+    return Math.random() * 100 < NapTime.activationChance;
   }
 
-  static execute(defender: Kitten): FightStep {
-    defender.hp += this.healAmount;
+  execute(attacker: Kitten): FightStep {
+    attacker.hp += NapTime.healAmount;
     return new FightStep(
-      defender,
+      attacker,
       null,
       'naptime',
-      this.healAmount,
+      NapTime.healAmount,
       'Temps de Sieste! Récupération de la santé.',
     );
   }
