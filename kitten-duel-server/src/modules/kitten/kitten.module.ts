@@ -91,7 +91,7 @@ import { Distract } from './domain/skills/distract';
         const registry = new SkillRegistry();
         registry.register(new Pounce(buffService, randomService));
         registry.register(new NapTime(randomService));
-        registry.register(new NineLives(buffService));
+        registry.register(new NineLives(buffService, randomService));
         registry.register(new SharpClaws(buffService, randomService));
         registry.register(new Hairball(randomService));
         registry.register(new PurrHealing(randomService));
