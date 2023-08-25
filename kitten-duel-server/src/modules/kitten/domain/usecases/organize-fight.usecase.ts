@@ -30,7 +30,7 @@ export class OrganizeFightUsecase {
     ]);
 
     const [attacker, defender] =
-      originalAttacker.agility > originalDefender.agility
+      originalAttacker.stats.agility > originalDefender.stats.agility
         ? [originalAttacker.clone(), originalDefender.clone()] // Use clone method
         : [originalDefender.clone(), originalAttacker.clone()]; // Use clone method
 
@@ -39,25 +39,25 @@ export class OrganizeFightUsecase {
       defender: originalDefender.clone(),
     });
 
-    while (attacker.isAlive() && defender.isAlive()) {
+    while (attacker.healthSystem.isAlive() && defender.healthSystem.isAlive()) {
       const roundDetails = this.fightService.performOneRound(
         attacker,
         defender,
       );
       duel.addSteps(roundDetails);
 
-      // Update buffs at the end of the full round using BuffService
+      // Update buffs at the end of the full round
       this.buffService.updateBuffDurations();
     }
 
     duel.setOutcome(attacker, defender);
 
     if (duel.winner.id === originalAttacker.id) {
-      originalAttacker.setWinner(duel.xpGained);
-      originalDefender.setLoser();
+      originalAttacker.levelingSystem.setWinner(duel.xpGained);
+      originalDefender.levelingSystem.setLoser();
     } else {
-      originalDefender.setWinner(duel.xpGained);
-      originalAttacker.setLoser();
+      originalDefender.levelingSystem.setWinner(duel.xpGained);
+      originalAttacker.levelingSystem.setLoser();
     }
 
     await Promise.all([

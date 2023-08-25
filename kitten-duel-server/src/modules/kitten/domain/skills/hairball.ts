@@ -12,8 +12,8 @@ export class Hairball implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    const damage = attacker.strength * 0.5; // For example, hairball damage could be half of strength
-    defender.dealDamage(damage);
+    const damage = attacker.stats.strength * 0.5; // For example, hairball damage could be half of strength
+    defender.healthSystem.dealDamage(damage);
     return new FightStep(
       attacker,
       defender,

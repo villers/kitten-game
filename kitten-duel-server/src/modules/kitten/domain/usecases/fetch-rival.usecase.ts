@@ -17,7 +17,7 @@ export class FetchRivalUsecase {
       ...(await this.kittenRepository.findById(inputs.currentPlayerId)),
     };
 
-    const currentPlayerLevel = currentPlayer.level;
+    const currentPlayerLevel = currentPlayer.levelingSystem.level;
 
     const rivals = [
       ...(await this.kittenRepository.findFightKittens(

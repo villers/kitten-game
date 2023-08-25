@@ -79,14 +79,14 @@ export class FightService {
     const criticalChance = this.randomService.numberBelow(100);
 
     if (
-      hitChance <= attacker.getHitChance() &&
-      dodgeChance > defender.getDodgeChance()
+      hitChance <= attacker.stats.getHitChance() &&
+      dodgeChance > defender.stats.getDodgeChance()
     ) {
-      const isCritical = criticalChance <= attacker.getCriticalChance();
+      const isCritical = criticalChance <= attacker.stats.getCriticalChance();
       const damage = isCritical
-        ? attacker.getAttackPower() * 1.5
-        : attacker.getAttackPower();
-      defender.dealDamage(damage);
+        ? attacker.stats.getAttackPower() * 1.5
+        : attacker.stats.getAttackPower();
+      defender.healthSystem.dealDamage(damage);
       return new FightStep(
         attacker,
         defender,
@@ -94,7 +94,7 @@ export class FightService {
         damage,
         isCritical ? 'Coup critique!' : 'Attaque réussie!',
       );
-    } else if (dodgeChance <= defender.getDodgeChance()) {
+    } else if (dodgeChance <= defender.stats.getDodgeChance()) {
       return new FightStep(
         attacker,
         defender,

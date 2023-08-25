@@ -10,16 +10,16 @@ export class PurrHealing implements Skill {
   isActive({ attacker }: SkillArgs): boolean {
     return (
       this.randomService.numberBelow(100) < PurrHealing.activationChance &&
-      attacker.hp <= attacker.maxHp * 0.5
+      attacker.healthSystem.hp <= attacker.healthSystem.maxHp * 0.5
     );
   }
 
-  execute({ attacker }: SkillArgs): FightStep {
-    const healing = attacker.vitality * 1.5; // For example, healing could be 1.5 times vitality
-    attacker.heal(healing);
+  execute({ attacker, defender }: SkillArgs): FightStep {
+    const healing = attacker.stats.vitality * 1.5; // For example, healing could be 1.5 times vitality
+    attacker.healthSystem.heal(healing);
     return new FightStep(
       attacker,
-      null,
+      defender,
       'purrHealing',
       healing,
       'Ronronnement thérapeutique! Récupération de la santé.',

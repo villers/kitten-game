@@ -15,7 +15,7 @@ export class SharpClaws implements Skill {
     return this.randomService.numberBelow(100) < SharpClaws.activationChance;
   }
 
-  execute({ attacker }: SkillArgs): FightStep {
+  execute({ attacker, defender }: SkillArgs): FightStep {
     this.buffService.applyBuff(attacker, {
       name: 'GriffesAcerées',
       duration: 3,
@@ -23,7 +23,7 @@ export class SharpClaws implements Skill {
     });
     return new FightStep(
       attacker,
-      null,
+      defender,
       'sharpClaws',
       0,
       'Griffes acérées! Augmentation des dégâts pendant 3 tours.',

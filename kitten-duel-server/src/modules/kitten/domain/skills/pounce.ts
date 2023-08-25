@@ -21,8 +21,8 @@ export class Pounce implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    const damage = attacker.getAttackPower();
-    defender.dealDamage(damage);
+    const damage = attacker.stats.getAttackPower();
+    defender.healthSystem.dealDamage(damage);
     return new FightStep(
       attacker,
       defender,

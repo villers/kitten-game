@@ -19,10 +19,10 @@ export class FetchRivalPresenter {
         return {
           id: player.id,
           name: player.name,
-          hp: player.hp,
-          level: player.level,
-          defeats: player.defeats,
-          victories: player.victories,
+          hp: player.healthSystem.hp,
+          level: player.levelingSystem.level,
+          defeats: player.levelingSystem.defeats,
+          victories: player.levelingSystem.victories,
         };
       }),
     };

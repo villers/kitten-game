@@ -3,73 +3,54 @@ import { KittenRepository } from '../../../domain/repositories/kitten.repository
 import { Injectable } from '@nestjs/common';
 import { KittenNotFoundException } from '../../../domain/exceptions/KittenNotFoundException';
 import { KittensNotFoundException } from '../../../domain/exceptions/KittensNotFoundException';
+import { LevelingSystem } from '../../../domain/entities/leveling-system.entity';
+import { HealthSystem } from '../../../domain/entities/health-system.entity';
+import { Stats } from '../../../domain/entities/stats.entity';
 
 @Injectable()
 export class KittenRepositoryImpl implements KittenRepository {
   private readonly kittens = new Map<string, Kitten>();
 
   constructor() {
-    const kitten1 = new Kitten({
+    this.createKitten({
       id: '1',
       name: 'Moka',
-      strength: 5,
-      dexterity: 5,
-      vitality: 5,
-      luck: 5,
-      agility: 5,
-      level: 1,
-      victories: 0,
-      defeats: 0,
-      xp: 0,
     });
 
-    const kitten2 = new Kitten({
+    this.createKitten({
       id: '2',
       name: 'Obrigada',
-      strength: 5,
-      dexterity: 5,
-      vitality: 5,
-      luck: 5,
-      agility: 5,
-      level: 1,
-      victories: 0,
-      defeats: 0,
-      xp: 0,
     });
 
-    const kitten3 = new Kitten({
+    this.createKitten({
       id: '3',
       name: 'Milo',
-      strength: 5,
-      dexterity: 5,
-      vitality: 5,
-      luck: 5,
-      agility: 5,
-      level: 1,
-      victories: 0,
-      defeats: 0,
-      xp: 0,
     });
 
-    const kitten4 = new Kitten({
+    this.createKitten({
       id: '4',
       name: 'Florian',
+    });
+  }
+
+  private createKitten(data: { id: string; name: string }) {
+    const stats = new Stats({
       strength: 5,
       dexterity: 5,
       vitality: 5,
       luck: 5,
       agility: 5,
-      level: 1,
-      victories: 0,
-      defeats: 0,
-      xp: 0,
     });
-
-    this.kittens
-      .set(kitten1.id, kitten1)
-      .set(kitten2.id, kitten2)
-      .set(kitten3.id, kitten3)
-      .set(kitten4.id, kitten4);
+    const healthSystem = new HealthSystem(stats.vitality);
+    const levelingSystem = new LevelingSystem();
+    const kitten = new Kitten({
+      id: data.id,
+      name: data.name,
+      stats: stats,
+      healthSystem: healthSystem,
+      levelingSystem: levelingSystem,
+    });
+    this.kittens.set(kitten.id, kitten);
   }
 
   async save(kitten: Kitten): Promise<void> {
@@ -98,8 +79,8 @@ export class KittenRepositoryImpl implements KittenRepository {
 
     const results = [...this.kittens.values()].filter(
       (kitten) =>
-        level + difference >= kitten.level &&
-        level - difference <= kitten.level &&
+        level + difference >= kitten.levelingSystem.level &&
+        level - difference <= kitten.levelingSystem.level &&
         kitten.id !== id,
     );
 

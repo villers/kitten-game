@@ -12,11 +12,11 @@ export class NapTime implements Skill {
     return this.randomService.numberBelow(100) < NapTime.activationChance;
   }
 
-  execute({ attacker }: SkillArgs): FightStep {
-    attacker.heal(NapTime.healAmount);
+  execute({ attacker, defender }: SkillArgs): FightStep {
+    attacker.healthSystem.heal(NapTime.healAmount);
     return new FightStep(
       attacker,
-      null,
+      defender,
       'naptime',
       NapTime.healAmount,
       'Temps de Sieste! Récupération de la santé.',

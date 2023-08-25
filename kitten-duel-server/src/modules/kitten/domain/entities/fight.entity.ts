@@ -1,4 +1,5 @@
-import { BASE_XP, Kitten } from './kitten.entity';
+import { Kitten } from './kitten.entity';
+import { BASE_XP } from './leveling-system.entity';
 
 export class FightStep {
   action: string; // Stockera l'action effectuée, par exemple, 'attaque', 'esquive', 'coup critique', etc.
@@ -39,12 +40,12 @@ export class FightEntity {
   }
 
   setOutcome(attacker: Kitten, defender: Kitten): void {
-    this.winner = attacker.isAlive() ? attacker : defender;
-    this.looser = attacker.isAlive() ? defender : attacker;
+    this.winner = attacker.healthSystem.isAlive() ? attacker : defender;
+    this.looser = attacker.healthSystem.isAlive() ? defender : attacker;
 
     this.xpGained = this.calculateXpGained(
-      this.winner.level,
-      this.looser.level,
+      this.winner.levelingSystem.level,
+      this.looser.levelingSystem.level,
     );
   }
 

@@ -34,17 +34,17 @@ export class AssignAttributePointsUsecase {
       assignData.strength +
       assignData.luck;
 
-    if (nbPoints > kitten.availableAttributePoints) {
+    if (nbPoints > kitten.levelingSystem.availableAttributePoints) {
       throw new KittenAddAttributePointsException(kittenId);
     }
 
     // Assigning the attribute points
-    kitten.vitality += assignData.vitality;
-    kitten.agility += assignData.agility;
-    kitten.dexterity += assignData.dexterity;
-    kitten.strength += assignData.strength;
-    kitten.luck += assignData.luck;
-    kitten.availableAttributePoints -= nbPoints;
+    kitten.stats.vitality += assignData.vitality;
+    kitten.stats.agility += assignData.agility;
+    kitten.stats.dexterity += assignData.dexterity;
+    kitten.stats.strength += assignData.strength;
+    kitten.stats.luck += assignData.luck;
+    kitten.levelingSystem.availableAttributePoints -= nbPoints;
 
     await this.kittenRepository.save(kitten);
 
