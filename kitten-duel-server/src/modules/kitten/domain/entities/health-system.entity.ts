@@ -2,9 +2,13 @@ export class HealthSystem {
   private _hp: number;
   maxHp: number;
 
-  constructor(vitality: number) {
+  constructor(vitality: number, hp?: number) {
     this.maxHp = vitality * 10;
-    this._hp = this.maxHp;
+    if (hp != null) {
+      this._hp = hp;
+    } else {
+      this._hp = this.maxHp;
+    }
   }
 
   isAlive(): boolean {
@@ -25,5 +29,9 @@ export class HealthSystem {
 
   heal(amount: number): void {
     this._hp += amount;
+  }
+
+  clone(): HealthSystem {
+    return new HealthSystem(this.maxHp, this._hp);
   }
 }

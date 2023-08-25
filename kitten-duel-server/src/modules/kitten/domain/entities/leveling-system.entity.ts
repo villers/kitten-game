@@ -30,4 +30,14 @@ export class LevelingSystem {
       this.availableAttributePoints += LEVEL_UP_ATTRIBUTE_POINTS;
     }
   }
+
+  clone(): LevelingSystem {
+    return new LevelingSystem({
+      level: this.level,
+      xp: this.xp,
+      victories: this.victories,
+      defeats: this.defeats,
+      availableAttributePoints: this.availableAttributePoints,
+    });
+  }
 }

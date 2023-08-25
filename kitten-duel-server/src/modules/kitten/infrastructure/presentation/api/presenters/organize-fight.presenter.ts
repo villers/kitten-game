@@ -60,7 +60,6 @@ export class OrganizeFightPresenter {
   steps: FightStep[] = [];
 
   static toPresent(output: OrganizeFightOutput): OrganizeFightPresenter {
-    console.log(output);
     return {
       id: output.fight.id,
       attacker: {

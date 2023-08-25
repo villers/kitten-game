@@ -24,4 +24,14 @@ export class Stats {
   getCriticalChance(): number {
     return this.luck;
   }
+
+  clone(): Stats {
+    return new Stats({
+      strength: this.strength,
+      dexterity: this.dexterity,
+      agility: this.agility,
+      luck: this.luck,
+      vitality: this.vitality,
+    });
+  }
 }

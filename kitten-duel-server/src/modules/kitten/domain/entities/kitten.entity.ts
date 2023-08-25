@@ -12,9 +12,6 @@ export class Kitten {
   activeBuffs: { [skillName: string]: number } = {};
 
   constructor(partial?: Partial<Kitten>) {
-    this.stats = new Stats(partial?.stats);
-    this.levelingSystem = new LevelingSystem(partial?.levelingSystem);
-    this.healthSystem = new HealthSystem(this.stats.vitality);
     Object.assign(this, partial);
   }
 
@@ -22,15 +19,9 @@ export class Kitten {
     return new Kitten({
       id: this.id,
       name: this.name,
-      stats: new Stats({
-        strength: this.stats.strength,
-        dexterity: this.stats.dexterity,
-        vitality: this.stats.vitality,
-        luck: this.stats.luck,
-        agility: this.stats.agility,
-      }),
-      healthSystem: new HealthSystem(this.stats.vitality),
-      levelingSystem: new LevelingSystem(),
+      stats: this.stats.clone(),
+      healthSystem: this.healthSystem.clone(),
+      levelingSystem: this.levelingSystem.clone(),
     });
   }
 }

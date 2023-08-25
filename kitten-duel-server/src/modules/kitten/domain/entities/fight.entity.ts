@@ -15,11 +15,21 @@ export class FightStep {
     damageDealt: number,
     description: string,
   ) {
-    this.attacker = attacker;
-    this.defender = defender;
+    this.attacker = attacker.clone();
+    this.defender = defender.clone();
     this.action = action;
     this.damageDealt = damageDealt;
     this.description = description;
+  }
+
+  clone(): FightStep {
+    return new FightStep(
+      this.attacker,
+      this.defender,
+      this.action,
+      this.damageDealt,
+      this.description,
+    );
   }
 }
 
@@ -64,5 +74,17 @@ export class FightEntity {
     if (levelDifference <= -3) return 0.7;
 
     return 0.5;
+  }
+
+  clone(): FightEntity {
+    return new FightEntity({
+      id: this.id,
+      attacker: this.attacker.clone(),
+      defender: this.defender.clone(),
+      winner: this.winner.clone(),
+      looser: this.looser.clone(),
+      xpGained: this.xpGained,
+      steps: this.steps.map((step) => step.clone()),
+    });
   }
 }

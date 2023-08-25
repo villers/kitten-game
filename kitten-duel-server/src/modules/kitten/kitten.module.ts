@@ -30,7 +30,7 @@ import { Hairball } from './domain/skills/hairball';
 import { Distract } from './domain/skills/distract';
 import { FightService } from './domain/services/fight.service';
 import { Pounce } from './domain/skills/pounce';
-import { PurrHealing } from './domain/skills/pure-healing';
+import { PureHealing } from './domain/skills/pure-healing';
 
 @Module({
   imports: [],
@@ -94,7 +94,7 @@ import { PurrHealing } from './domain/skills/pure-healing';
         registry.register(new NineLives(buffService, randomService));
         registry.register(new SharpClaws(buffService, randomService));
         registry.register(new Hairball(randomService));
-        registry.register(new PurrHealing(randomService));
+        registry.register(new PureHealing(randomService));
         registry.register(new Distract(buffService, randomService));
 
         return registry;
