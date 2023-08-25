@@ -1,13 +1,13 @@
-import { FightEntity, FightStep } from '../entities/fight.entity';
-import { Kitten } from '../entities/kitten.entity';
-import { Equipment } from '../entities/equipment.entity';
-import { FightRepository } from '../repositories/fight.repository';
 import { EquipmentRepository } from '../repositories/equipment.repository';
+import { FightRepository } from '../repositories/fight.repository';
 import { KittenRepository } from '../repositories/kitten.repository';
+import { FightEntity } from '../entities/fight.entity';
+import { FightService } from '../services/fight.service';
+import { BuffService } from '../services/buff.service';
 
 export type OrganizeFightInput = {
-  kittenAId: string;
-  kittenBId: string;
+  attackerId: string;
+  defenderId: string;
 };
 
 export type OrganizeFightOutput = {
@@ -19,102 +19,53 @@ export class OrganizeFightUsecase {
     private equipmentService: EquipmentRepository,
     private fightRepository: FightRepository,
     private kittenRepository: KittenRepository,
+    private fightService: FightService,
+    private buffService: BuffService,
   ) {}
 
   async execute(inputs: OrganizeFightInput): Promise<OrganizeFightOutput> {
-    const kittenA = {
-      ...(await this.kittenRepository.findById(inputs.kittenAId)),
-    };
-    const kittenB = {
-      ...(await this.kittenRepository.findById(inputs.kittenBId)),
-    };
+    const [originalAttacker, originalDefender] = await Promise.all([
+      this.kittenRepository.findById(inputs.attackerId),
+      this.kittenRepository.findById(inputs.defenderId),
+    ]);
 
-    const initialAttacker = this.determineInitialAttacker(kittenA, kittenB);
-    const initialDefender = initialAttacker === kittenA ? kittenB : kittenA;
+    const [attacker, defender] =
+      originalAttacker.agility > originalDefender.agility
+        ? [originalAttacker.clone(), originalDefender.clone()] // Use clone method
+        : [originalDefender.clone(), originalAttacker.clone()]; // Use clone method
 
-    let currentAttacker = initialAttacker;
-    let currentDefender = initialDefender;
+    const duel = new FightEntity({
+      attacker: originalAttacker.clone(),
+      defender: originalDefender.clone(),
+    });
 
-    const duel: FightEntity = new FightEntity();
-    duel.kitten1Id = kittenA.id;
-    duel.kitten2Id = kittenB.id;
-    duel.kitten1InitialHp = kittenA.hp;
-    duel.kitten2InitialHp = kittenB.hp;
-    duel.steps = [];
-
-    while (kittenA.hp > 0 && kittenB.hp > 0) {
-      const attackDetail = await this.performAttack(
-        currentAttacker,
-        currentDefender,
+    while (attacker.isAlive() && defender.isAlive()) {
+      const roundDetails = this.fightService.performOneRound(
+        attacker,
+        defender,
       );
-      duel.steps.push(attackDetail);
-      [currentAttacker, currentDefender] = [currentDefender, currentAttacker]; // Swap attacker and defender roles
+      duel.addSteps(roundDetails);
+
+      // Update buffs at the end of the full round using BuffService
+      this.buffService.updateBuffDurations();
     }
 
-    duel.winnerId = kittenA.hp > 0 ? kittenA.id : kittenB.id;
-    duel.kitten1RemainingHp = kittenA.hp;
-    duel.kitten2RemainingHp = kittenB.hp;
+    duel.setOutcome(attacker, defender);
 
-    await this.fightRepository.save(duel);
-
-    return {
-      fight: duel,
-    };
-  }
-
-  private determineInitialAttacker(kittenA: Kitten, kittenB: Kitten): Kitten {
-    const speedFactor = Math.random();
-    if (kittenA.speed > kittenB.speed || speedFactor > 0.8) {
-      return kittenA;
+    if (duel.winner.id === originalAttacker.id) {
+      originalAttacker.setWinner(duel.xpGained);
+      originalDefender.setLoser();
+    } else {
+      originalDefender.setWinner(duel.xpGained);
+      originalAttacker.setLoser();
     }
-    return kittenB;
-  }
 
-  private async performAttack(
-    attacker: Kitten,
-    defender: Kitten,
-  ): Promise<FightStep> {
-    const attackerEquipments = await this.equipmentService.findByIds(
-      attacker.equipmentIds,
-    );
-    const defenderEquipments = await this.equipmentService.findByIds(
-      defender.equipmentIds,
-    );
-    const attackerEquipmentPower =
-      this.calculateEquipmentPower(attackerEquipments);
-    const defenderEquipmentDefense =
-      this.calculateEquipmentDefense(defenderEquipments);
+    await Promise.all([
+      this.fightRepository.save(duel),
+      this.kittenRepository.save(originalAttacker),
+      this.kittenRepository.save(originalDefender),
+    ]);
 
-    // Calculate total attack power with variability
-    const baseAttackPower = attacker.power + attackerEquipmentPower;
-    const variability = (baseAttackPower * (Math.random() - 0.5)) / 2;
-    const totalAttackPower = baseAttackPower + variability;
-
-    // Ensure damage isn't negative and factor in defender's intrinsic and equipment defense
-    const totalDefense = defender.defense + defenderEquipmentDefense;
-    const damageToDefender = Math.max(totalAttackPower - totalDefense, 0);
-    defender.hp -= damageToDefender;
-
-    return {
-      attackerId: attacker.id,
-      defenderId: defender.id,
-      attackPower: totalAttackPower,
-      attackerHp: attacker.hp,
-      defenderHp: defender.hp,
-    };
-  }
-
-  private calculateEquipmentPower(equipments: Equipment[]): number {
-    return equipments.reduce(
-      (total, equipment) => total + (equipment.powerBoost || 0),
-      0,
-    );
-  }
-
-  private calculateEquipmentDefense(equipments: Equipment[]): number {
-    return equipments.reduce(
-      (total, equipment) => total + (equipment.defenseBoost || 0),
-      0,
-    );
+    return { fight: duel };
   }
 }

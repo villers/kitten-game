@@ -9,53 +9,61 @@ export class KittenRepositoryImpl implements KittenRepository {
   private readonly kittens = new Map<string, Kitten>();
 
   constructor() {
-    const kitten1 = new Kitten();
-    kitten1.id = '1';
-    kitten1.name = 'Moka';
-    kitten1.power = 5;
-    kitten1.hp = 10;
-    kitten1.defense = 0;
-    kitten1.speed = 10;
-    kitten1.equipmentIds = [];
-    kitten1.level = 1;
-    kitten1.victories = 5;
-    kitten1.defeats = 0;
+    const kitten1 = new Kitten({
+      id: '1',
+      name: 'Moka',
+      strength: 5,
+      dexterity: 5,
+      vitality: 5,
+      luck: 5,
+      agility: 5,
+      level: 1,
+      victories: 0,
+      defeats: 0,
+      xp: 0,
+    });
 
-    const kitten2 = new Kitten();
-    kitten2.id = '2';
-    kitten2.name = 'Obrigada';
-    kitten2.power = 5;
-    kitten2.hp = 10;
-    kitten2.defense = 0;
-    kitten2.speed = 10;
-    kitten2.equipmentIds = [];
-    kitten2.level = 8;
-    kitten2.victories = 10;
-    kitten2.defeats = 10;
+    const kitten2 = new Kitten({
+      id: '2',
+      name: 'Obrigada',
+      strength: 5,
+      dexterity: 5,
+      vitality: 5,
+      luck: 5,
+      agility: 5,
+      level: 1,
+      victories: 0,
+      defeats: 0,
+      xp: 0,
+    });
 
-    const kitten3 = new Kitten();
-    kitten3.id = '3';
-    kitten3.name = 'Milo';
-    kitten3.power = 4;
-    kitten3.hp = 10;
-    kitten3.defense = 0;
-    kitten3.speed = 10;
-    kitten3.equipmentIds = [];
-    kitten3.level = 3;
-    kitten3.victories = 10;
-    kitten3.defeats = 0;
+    const kitten3 = new Kitten({
+      id: '3',
+      name: 'Milo',
+      strength: 5,
+      dexterity: 5,
+      vitality: 5,
+      luck: 5,
+      agility: 5,
+      level: 1,
+      victories: 0,
+      defeats: 0,
+      xp: 0,
+    });
 
-    const kitten4 = new Kitten();
-    kitten4.id = '4';
-    kitten4.name = 'Florian';
-    kitten4.power = 4;
-    kitten4.hp = 10;
-    kitten4.defense = 0;
-    kitten4.speed = 10;
-    kitten4.equipmentIds = [];
-    kitten4.level = 0;
-    kitten4.victories = 10;
-    kitten4.defeats = 0;
+    const kitten4 = new Kitten({
+      id: '4',
+      name: 'Florian',
+      strength: 5,
+      dexterity: 5,
+      vitality: 5,
+      luck: 5,
+      agility: 5,
+      level: 1,
+      victories: 0,
+      defeats: 0,
+      xp: 0,
+    });
 
     this.kittens
       .set(kitten1.id, kitten1)
