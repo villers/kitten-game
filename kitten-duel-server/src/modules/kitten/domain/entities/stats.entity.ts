@@ -25,6 +25,12 @@ export class Stats {
     return this.luck;
   }
 
+  getDefensePower(): number {
+    // For now, setting defense power to be directly related to strength,
+    // but this can be changed to be based on other stats or a combination of stats.
+    return this.strength;
+  }
+
   clone(): Stats {
     return new Stats({
       strength: this.strength,

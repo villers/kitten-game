@@ -12,7 +12,6 @@ export class Distract implements Skill {
   ) {}
 
   isActive({ defender }: SkillArgs): boolean {
-    // Only activate if defender doesn't have the Distracted buff already
     return (
       !this.buffService
         .getBuffsForKitten(defender)
@@ -31,6 +30,7 @@ export class Distract implements Skill {
       attacker,
       defender,
       'distract',
+      0,
       0,
       'Distraction! Le défenseur pourrait perdre son prochain tour.',
     );

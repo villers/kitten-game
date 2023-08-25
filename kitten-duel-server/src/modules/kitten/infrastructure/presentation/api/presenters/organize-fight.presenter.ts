@@ -40,6 +40,8 @@ class FightStep {
   @ApiProperty()
   damageDealt: number;
   @ApiProperty()
+  healAmount: number;
+  @ApiProperty()
   description: string;
 }
 
@@ -156,6 +158,7 @@ export class OrganizeFightPresenter {
           xp: step.defender.levelingSystem.xp,
         },
         damageDealt: step.damageDealt,
+        healAmount: step.healAmount,
         description: step.description,
       })),
     };

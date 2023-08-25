@@ -1,24 +1,43 @@
 import { Kitten } from './kitten.entity';
-import { BASE_XP } from './leveling-system.entity';
+import { BASE_XP } from './leveling-system.entity'; //
+
+export type StepAction =
+  | 'distract'
+  | 'esquive'
+  | 'raté'
+  | 'furySwipe'
+  | 'hairball'
+  | 'mysticalMeow'
+  | 'naptime'
+  | 'nineLives'
+  | 'pounce'
+  | 'protectivePurr'
+  | 'sharpClaws'
+  | 'purrHealing'
+  | 'attaque'
+  | 'coup critique';
 
 export class FightStep {
-  action: string; // Stockera l'action effectuée, par exemple, 'attaque', 'esquive', 'coup critique', etc.
+  action: StepAction;
   attacker: Kitten;
   defender: Kitten;
   damageDealt: number;
-  description: string; // Texte descriptif pour l'action
+  healAmount?: number;
+  description: string;
 
   constructor(
     attacker: Kitten,
     defender: Kitten,
-    action: string,
+    action: StepAction,
     damageDealt: number,
+    healAmount: number,
     description: string,
   ) {
     this.attacker = attacker.clone();
     this.defender = defender.clone();
     this.action = action;
     this.damageDealt = damageDealt;
+    this.healAmount = healAmount;
     this.description = description;
   }
 
@@ -28,6 +47,7 @@ export class FightStep {
       this.defender,
       this.action,
       this.damageDealt,
+      this.healAmount,
       this.description,
     );
   }

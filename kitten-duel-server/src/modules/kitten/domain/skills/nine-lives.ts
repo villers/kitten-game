@@ -20,8 +20,8 @@ export class NineLives implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    attacker.healthSystem.hp = attacker.healthSystem.maxHp * 0.5;
-    // Ensure this skill can't be used again in the same fight
+    const healing = attacker.healthSystem.maxHp * 0.5;
+    attacker.healthSystem.hp = healing;
     this.buffService.applyBuff(attacker, {
       name: 'NineLives',
       duration: 1,
@@ -32,6 +32,7 @@ export class NineLives implements Skill {
       defender,
       'nineLives',
       0,
+      healing,
       'Neuf vies! Récupération à 50% de la santé.',
     );
   }

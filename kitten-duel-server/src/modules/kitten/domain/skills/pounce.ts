@@ -4,7 +4,7 @@ import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
 
 export class Pounce implements Skill {
-  static activationChance = 10;
+  static activationChance = 15;
 
   constructor(
     private buffService: BuffService,
@@ -21,13 +21,17 @@ export class Pounce implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    const damage = attacker.stats.getAttackPower();
+    const isCritical = Math.random() <= attacker.stats.getCriticalChance();
+    const damage = isCritical
+      ? 1.5 * 0.8 * attacker.stats.getAttackPower()
+      : 0.8 * attacker.stats.getAttackPower();
     defender.healthSystem.dealDamage(damage);
     return new FightStep(
       attacker,
       defender,
       'pounce',
       damage,
+      0,
       'Attaque Surprise réussie!',
     );
   }

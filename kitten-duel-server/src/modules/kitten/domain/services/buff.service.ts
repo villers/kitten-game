@@ -4,13 +4,12 @@ export class Buff {
   constructor(
     public name: string,
     public duration: number,
-    public effect: BuffEffect, // Using a BuffEffect type
+    public effect: BuffEffect,
   ) {}
 }
 
-// Define a type or interface for BuffEffect
 export type BuffEffect = {
-  type: 'increaseAttack' | 'reduceDefense' | 'heal' | 'damage'; // Sample types
+  type: 'increaseAttack' | 'reduceDefense' | 'heal' | 'damage' | 'reduceAttack';
   value: number;
 };
 
@@ -21,12 +20,16 @@ export class BuffService {
     if (!this.activeBuffs.has(kitten)) {
       this.activeBuffs.set(kitten, []);
     }
-
     this.activeBuffs.get(kitten).push(buff);
+    this.applyBuffEffect(kitten, buff.effect);
   }
 
   removeBuff(kitten: Kitten, buffName: string) {
     const buffs = this.activeBuffs.get(kitten) || [];
+    const buffToRemove = buffs.find((b) => b.name === buffName);
+    if (buffToRemove) {
+      this.removeBuffEffect(kitten, buffToRemove.effect);
+    }
     this.activeBuffs.set(
       kitten,
       buffs.filter((b) => b.name !== buffName),
@@ -37,7 +40,6 @@ export class BuffService {
     return this.activeBuffs.get(kitten) || [];
   }
 
-  // New method to update buff durations
   updateBuffDurations() {
     for (const [kitten, buffs] of this.activeBuffs.entries()) {
       for (const buff of buffs) {
@@ -46,6 +48,37 @@ export class BuffService {
           this.removeBuff(kitten, buff.name);
         }
       }
+    }
+  }
+
+  private applyBuffEffect(kitten: Kitten, effect: BuffEffect) {
+    switch (effect?.type) {
+      case 'increaseAttack':
+        kitten.stats.strength += effect.value;
+        break;
+      case 'reduceDefense':
+        kitten.stats.strength -= effect.value;
+        break;
+      case 'heal':
+        kitten.healthSystem.hp += effect.value;
+        break;
+      case 'damage':
+        kitten.healthSystem.hp -= effect.value;
+        break;
+      case 'reduceAttack':
+        kitten.stats.strength -= effect.value;
+    }
+  }
+
+  private removeBuffEffect(kitten: Kitten, effect: BuffEffect) {
+    switch (effect?.type) {
+      case 'increaseAttack':
+        kitten.stats.strength -= effect.value;
+        break;
+      case 'reduceDefense':
+        kitten.stats.strength += effect.value;
+        break;
+      // For 'heal', 'damage', and 'reduceAttack', we don't reverse the effect when removing the buff
     }
   }
 }

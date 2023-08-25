@@ -2,7 +2,7 @@ export class HealthSystem {
   private _hp: number;
   maxHp: number;
 
-  constructor(vitality: number, hp?: number) {
+  constructor(vitality?: number, hp?: number) {
     this.maxHp = vitality * 10;
     if (hp != null) {
       this._hp = hp;
@@ -28,10 +28,13 @@ export class HealthSystem {
   }
 
   heal(amount: number): void {
-    this._hp += amount;
+    this._hp += Math.max(this.maxHp, amount);
   }
 
   clone(): HealthSystem {
-    return new HealthSystem(this.maxHp, this._hp);
+    const healthsystem = new HealthSystem();
+    healthsystem.maxHp = this.maxHp;
+    healthsystem.hp = this.hp;
+    return healthsystem;
   }
 }

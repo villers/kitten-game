@@ -3,8 +3,8 @@ import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
 
-export class SharpClaws implements Skill {
-  static activationChance = 10;
+export class MysticalMeow implements Skill {
+  static activationChance = 15;
 
   constructor(
     private buffService: BuffService,
@@ -12,25 +12,25 @@ export class SharpClaws implements Skill {
   ) {}
 
   isActive({}: SkillArgs): boolean {
-    return this.randomService.numberBelow(100) < SharpClaws.activationChance;
+    return this.randomService.numberBelow(100) < MysticalMeow.activationChance;
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    this.buffService.applyBuff(attacker, {
-      name: 'GriffesAcerées',
-      duration: 3,
+    this.buffService.applyBuff(defender, {
+      name: 'Confused',
+      duration: 2,
       effect: {
-        type: 'increaseAttack',
-        value: 0.5 * attacker.stats.getAttackPower(),
+        type: 'reduceAttack',
+        value: -0.5 * defender.stats.getAttackPower(),
       },
     });
     return new FightStep(
       attacker,
       defender,
-      'sharpClaws',
+      'mysticalMeow',
       0,
       0,
-      'Griffes acérées! Augmentation des dégâts pendant 3 tours.',
+      "Miaulement mystique! L'adversaire est confus et sa chance d'attaquer est réduite.",
     );
   }
 }

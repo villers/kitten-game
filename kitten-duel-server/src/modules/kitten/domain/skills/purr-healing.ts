@@ -2,14 +2,14 @@ import { Skill, SkillArgs } from './skill.interface';
 import { RandomService } from '../services/random.service';
 import { FightStep } from '../entities/fight.entity';
 
-export class PureHealing implements Skill {
+export class PurrHealing implements Skill {
   static activationChance = 20;
 
   constructor(private randomService: RandomService) {}
 
   isActive({ attacker }: SkillArgs): boolean {
     return (
-      this.randomService.numberBelow(100) < PureHealing.activationChance &&
+      this.randomService.numberBelow(100) < PurrHealing.activationChance &&
       attacker.healthSystem.hp <= attacker.healthSystem.maxHp * 0.5
     );
   }
@@ -21,6 +21,7 @@ export class PureHealing implements Skill {
       attacker,
       defender,
       'purrHealing',
+      0,
       healing,
       'Ronronnement thérapeutique! Récupération de la santé.',
     );
