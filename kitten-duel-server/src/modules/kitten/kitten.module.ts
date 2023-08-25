@@ -20,17 +20,17 @@ import { FetchRivalController } from './infrastructure/presentation/api/controll
 import { FetchRivalUsecase } from './domain/usecases/fetch-rival.usecase';
 import { LevelUpController } from './infrastructure/presentation/api/controllers/level-up.controller';
 import { AssignAttributePointsUsecase } from './domain/usecases/assign-attribute-points.usecase';
-import { FightService } from './domain/services/fight.service';
 import { SkillRegistry } from './domain/skills/skill.registry';
 import { RandomService } from './domain/services/random.service';
 import { BuffService } from './domain/services/buff.service';
-import { Pounce } from './domain/skills/pounce';
 import { NapTime } from './domain/skills/nap-time';
 import { NineLives } from './domain/skills/nine-lives';
 import { SharpClaws } from './domain/skills/sharp-claws';
 import { Hairball } from './domain/skills/hairball';
-import { PurrHealing } from './domain/skills/pure-healing';
 import { Distract } from './domain/skills/distract';
+import { FightService } from './domain/services/fight.service';
+import { Pounce } from './domain/skills/pounce';
+import { PurrHealing } from './domain/skills/pure-healing';
 
 @Module({
   imports: [],
