@@ -4,21 +4,24 @@ import { RandomService } from '../services/random.service';
 
 export class NapTime implements Skill {
   static activationChance = 20;
-  static healAmount = 10;
-
   constructor(private randomService: RandomService) {}
 
-  isActive({}: SkillArgs): boolean {
-    return this.randomService.numberBelow(100) < NapTime.activationChance;
+  isActive({ attacker }: SkillArgs): boolean {
+    return (
+      attacker.healthSystem.hp < attacker.healthSystem.maxHp * 0.9 &&
+      this.randomService.numberBelow(100) <= NapTime.activationChance
+    );
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    attacker.healthSystem.heal(NapTime.healAmount);
+    const healAmount = attacker.healthSystem.maxHp * 0.1;
+    attacker.healthSystem.heal(healAmount);
     return new FightStep(
       attacker,
       defender,
       'naptime',
-      NapTime.healAmount,
+      0,
+      healAmount,
       'Temps de Sieste! Récupération de la santé.',
     );
   }

@@ -1,10 +1,8 @@
 'use client';
-import Image from 'next/image';
-import styles from './page.module.css';
 import React from 'react';
-import { Game } from '@/app/game/game';
+import Game from './game';
 
-const combatData = {
+const data = {
   attacker: {
     id: '1',
     name: 'Moka',
@@ -386,10 +384,12 @@ const combatData = {
   ],
 };
 
-export default function Home() {
+function App() {
   return (
-    <>
-      <Game combatData={combatData} />
-    </>
+    <div className="App">
+      <Game data={data} />
+    </div>
   );
 }
+
+export default App;

@@ -3,8 +3,8 @@ import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
 
-export class SharpClaws implements Skill {
-  static activationChance = 10;
+export class ProtectivePurr implements Skill {
+  static activationChance = 20;
 
   constructor(
     private buffService: BuffService,
@@ -12,25 +12,27 @@ export class SharpClaws implements Skill {
   ) {}
 
   isActive({}: SkillArgs): boolean {
-    return this.randomService.numberBelow(100) <= SharpClaws.activationChance;
+    return (
+      this.randomService.numberBelow(100) <= ProtectivePurr.activationChance
+    );
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
     this.buffService.applyBuff(attacker, {
-      name: 'GriffesAcerées',
+      name: 'Protection',
       duration: 3,
       effect: {
-        type: 'increaseAttack',
-        value: 0.5 * attacker.stats.getAttackPower(),
+        type: 'reduceDefense',
+        value: -0.3 * defender.stats.getDefensePower(),
       },
     });
     return new FightStep(
       attacker,
       defender,
-      'sharpClaws',
+      'protectivePurr',
       0,
       0,
-      'Griffes acérées! Augmentation des dégâts pendant 3 tours.',
+      'Ronronnement protecteur! La défense est renforcée pendant 3 tours.',
     );
   }
 }

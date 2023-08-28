@@ -1,25 +1,55 @@
 import { Kitten } from './kitten.entity';
-import { BASE_XP } from './leveling-system.entity';
+import { BASE_XP } from './leveling-system.entity'; //
+
+export type StepAction =
+  | 'distract'
+  | 'esquive'
+  | 'raté'
+  | 'furySwipe'
+  | 'hairball'
+  | 'mysticalMeow'
+  | 'naptime'
+  | 'nineLives'
+  | 'pounce'
+  | 'protectivePurr'
+  | 'sharpClaws'
+  | 'purrHealing'
+  | 'attaque'
+  | 'coup critique';
 
 export class FightStep {
-  action: string; // Stockera l'action effectuée, par exemple, 'attaque', 'esquive', 'coup critique', etc.
+  action: StepAction;
   attacker: Kitten;
   defender: Kitten;
   damageDealt: number;
-  description: string; // Texte descriptif pour l'action
+  healAmount?: number;
+  description: string;
 
   constructor(
     attacker: Kitten,
     defender: Kitten,
-    action: string,
+    action: StepAction,
     damageDealt: number,
+    healAmount: number,
     description: string,
   ) {
-    this.attacker = attacker;
-    this.defender = defender;
+    this.attacker = attacker.clone();
+    this.defender = defender.clone();
     this.action = action;
     this.damageDealt = damageDealt;
+    this.healAmount = healAmount;
     this.description = description;
+  }
+
+  clone(): FightStep {
+    return new FightStep(
+      this.attacker,
+      this.defender,
+      this.action,
+      this.damageDealt,
+      this.healAmount,
+      this.description,
+    );
   }
 }
 
@@ -64,5 +94,17 @@ export class FightEntity {
     if (levelDifference <= -3) return 0.7;
 
     return 0.5;
+  }
+
+  clone(): FightEntity {
+    return new FightEntity({
+      id: this.id,
+      attacker: this.attacker.clone(),
+      defender: this.defender.clone(),
+      winner: this.winner.clone(),
+      looser: this.looser.clone(),
+      xpGained: this.xpGained,
+      steps: this.steps.map((step) => step.clone()),
+    });
   }
 }

@@ -31,8 +31,8 @@ export class OrganizeFightUsecase {
 
     const [attacker, defender] =
       originalAttacker.stats.agility > originalDefender.stats.agility
-        ? [originalAttacker.clone(), originalDefender.clone()] // Use clone method
-        : [originalDefender.clone(), originalAttacker.clone()]; // Use clone method
+        ? [originalAttacker.clone(), originalDefender.clone()]
+        : [originalDefender.clone(), originalAttacker.clone()];
 
     const duel = new FightEntity({
       attacker: originalAttacker.clone(),
@@ -65,6 +65,8 @@ export class OrganizeFightUsecase {
       this.kittenRepository.save(originalAttacker),
       this.kittenRepository.save(originalDefender),
     ]);
+
+    console.log(duel.steps.length);
 
     return { fight: duel };
   }

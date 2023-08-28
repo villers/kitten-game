@@ -42,7 +42,6 @@ import { FightStep } from '../entities/fight.entity';
 export interface SkillArgs {
   attacker?: Kitten;
   defender?: Kitten;
-  // ... other properties
 }
 
 export interface Skill {

@@ -56,6 +56,7 @@ export class FightService {
       defender,
       'distract',
       0,
+      0,
       'Le chaton est distrait et saute son tour!',
     );
   }
@@ -83,15 +84,21 @@ export class FightService {
       dodgeChance > defender.stats.getDodgeChance()
     ) {
       const isCritical = criticalChance <= attacker.stats.getCriticalChance();
-      const damage = isCritical
-        ? attacker.stats.getAttackPower() * 1.5
-        : attacker.stats.getAttackPower();
+      const baseAttackPower = attacker.stats.getAttackPower();
+      const criticalModifier = isCritical ? 1.5 : 1;
+      const totalAttackPower = baseAttackPower * criticalModifier;
+      const damage = Math.max(
+        0,
+        totalAttackPower - defender.stats.getDefensePower(),
+      );
+
       defender.healthSystem.dealDamage(damage);
       return new FightStep(
         attacker,
         defender,
         isCritical ? 'coup critique' : 'attaque',
         damage,
+        0,
         isCritical ? 'Coup critique!' : 'Attaque réussie!',
       );
     } else if (dodgeChance <= defender.stats.getDodgeChance()) {
@@ -100,10 +107,18 @@ export class FightService {
         defender,
         'esquive',
         0,
+        0,
         'Esquive réussie!',
       );
     } else {
-      return new FightStep(attacker, defender, 'raté', 0, 'Attaque manquée!');
+      return new FightStep(
+        attacker,
+        defender,
+        'raté',
+        0,
+        0,
+        'Attaque manquée!',
+      );
     }
   }
 }

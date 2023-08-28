@@ -35,11 +35,11 @@ export class KittenRepositoryImpl implements KittenRepository {
 
   private createKitten(data: { id: string; name: string }) {
     const stats = new Stats({
-      strength: 5,
-      dexterity: 5,
-      vitality: 5,
-      luck: 5,
-      agility: 5,
+      strength: 1,
+      dexterity: 1,
+      vitality: 1,
+      luck: 1,
+      agility: 1,
     });
     const healthSystem = new HealthSystem(stats.vitality);
     const levelingSystem = new LevelingSystem();
