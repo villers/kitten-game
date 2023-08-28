@@ -8,7 +8,7 @@ export class Hairball implements Skill {
   constructor(private randomService: RandomService) {}
 
   isActive({}: SkillArgs): boolean {
-    return this.randomService.numberBelow(100) < Hairball.activationChance;
+    return this.randomService.numberBelow(100) <= Hairball.activationChance;
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {

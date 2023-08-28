@@ -8,9 +8,8 @@ export class NapTime implements Skill {
 
   isActive({ attacker }: SkillArgs): boolean {
     return (
-      attacker.healthSystem.hp + attacker.healthSystem.maxHp * 0.1 <=
-        attacker.healthSystem.maxHp &&
-      this.randomService.numberBelow(100) < NapTime.activationChance
+      attacker.healthSystem.hp < attacker.healthSystem.maxHp * 0.9 &&
+      this.randomService.numberBelow(100) <= NapTime.activationChance
     );
   }
 

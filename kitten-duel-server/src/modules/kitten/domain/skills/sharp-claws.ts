@@ -12,7 +12,7 @@ export class SharpClaws implements Skill {
   ) {}
 
   isActive({}: SkillArgs): boolean {
-    return this.randomService.numberBelow(100) < SharpClaws.activationChance;
+    return this.randomService.numberBelow(100) <= SharpClaws.activationChance;
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {

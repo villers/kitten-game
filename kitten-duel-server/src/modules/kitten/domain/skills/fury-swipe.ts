@@ -8,7 +8,7 @@ export class FurySwipe implements Skill {
   constructor(private randomService: RandomService) {}
 
   isActive({}: SkillArgs): boolean {
-    return this.randomService.numberBelow(100) < FurySwipe.activationChance;
+    return this.randomService.numberBelow(100) <= FurySwipe.activationChance;
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {

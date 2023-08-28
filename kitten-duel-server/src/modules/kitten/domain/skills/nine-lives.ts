@@ -11,7 +11,7 @@ export class NineLives implements Skill {
 
   isActive({ attacker }: SkillArgs): boolean {
     return (
-      this.randomService.numberBelow(100) < 5 &&
+      this.randomService.numberBelow(100) <= 5 &&
       attacker.healthSystem.hp <= attacker.healthSystem.maxHp * 0.1 &&
       !this.buffService
         .getBuffsForKitten(attacker)

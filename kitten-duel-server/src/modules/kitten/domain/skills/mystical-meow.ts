@@ -12,7 +12,7 @@ export class MysticalMeow implements Skill {
   ) {}
 
   isActive({}: SkillArgs): boolean {
-    return this.randomService.numberBelow(100) < MysticalMeow.activationChance;
+    return this.randomService.numberBelow(100) <= MysticalMeow.activationChance;
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {

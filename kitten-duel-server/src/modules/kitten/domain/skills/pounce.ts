@@ -13,7 +13,7 @@ export class Pounce implements Skill {
 
   isActive({ attacker }: SkillArgs): boolean {
     return (
-      this.randomService.numberBelow(100) < Pounce.activationChance &&
+      this.randomService.numberBelow(100) <= Pounce.activationChance &&
       !this.buffService
         .getBuffsForKitten(attacker)
         .some((buff) => buff.name === 'GriffesAcerées')

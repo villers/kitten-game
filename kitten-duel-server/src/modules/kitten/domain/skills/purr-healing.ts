@@ -9,7 +9,7 @@ export class PurrHealing implements Skill {
 
   isActive({ attacker }: SkillArgs): boolean {
     return (
-      this.randomService.numberBelow(100) < PurrHealing.activationChance &&
+      this.randomService.numberBelow(100) <= PurrHealing.activationChance &&
       attacker.healthSystem.hp <= attacker.healthSystem.maxHp * 0.5
     );
   }

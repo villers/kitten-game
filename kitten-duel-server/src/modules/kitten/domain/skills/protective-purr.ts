@@ -13,7 +13,7 @@ export class ProtectivePurr implements Skill {
 
   isActive({}: SkillArgs): boolean {
     return (
-      this.randomService.numberBelow(100) < ProtectivePurr.activationChance
+      this.randomService.numberBelow(100) <= ProtectivePurr.activationChance
     );
   }
 

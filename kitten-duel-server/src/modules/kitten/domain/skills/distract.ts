@@ -16,7 +16,7 @@ export class Distract implements Skill {
       !this.buffService
         .getBuffsForKitten(defender)
         .some((buff) => buff.name === 'Distracted') &&
-      this.randomService.numberBelow(100) < this.activationChance
+      this.randomService.numberBelow(100) <= this.activationChance
     );
   }
 
