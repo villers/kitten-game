@@ -1,17 +1,5 @@
 import { Kitten } from '../entities/kitten.entity';
-
-export class Buff {
-  constructor(
-    public name: string,
-    public duration: number,
-    public effect: BuffEffect,
-  ) {}
-}
-
-export type BuffEffect = {
-  type: 'increaseAttack' | 'reduceDefense' | 'heal' | 'damage' | 'reduceAttack';
-  value: number;
-};
+import { Buff, BuffEffect } from '../entities/buff.entity';
 
 export class BuffService {
   private activeBuffs: Map<Kitten, Buff[]> = new Map();

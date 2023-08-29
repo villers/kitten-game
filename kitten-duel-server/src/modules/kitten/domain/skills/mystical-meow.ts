@@ -2,6 +2,7 @@ import { FightStep } from '../entities/fight.entity';
 import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
+import { Buff } from '../entities/buff.entity';
 
 export class MysticalMeow implements Skill {
   static activationChance = 15;
@@ -16,14 +17,12 @@ export class MysticalMeow implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    this.buffService.applyBuff(defender, {
-      name: 'Confused',
-      duration: 2,
-      effect: {
-        type: 'reduceAttack',
-        value: -0.5 * defender.stats.getAttackPower(),
-      },
+    const buff = new Buff('Confused', 2, {
+      type: 'reduceAttack',
+      value: -0.5 * defender.stats.getAttackPower(),
     });
+
+    this.buffService.applyBuff(defender, buff);
     return new FightStep(
       attacker,
       defender,

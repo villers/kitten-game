@@ -2,6 +2,7 @@ import { FightStep } from '../entities/fight.entity';
 import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
+import { Buff } from '../entities/buff.entity';
 
 export class ProtectivePurr implements Skill {
   static activationChance = 20;
@@ -18,14 +19,12 @@ export class ProtectivePurr implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    this.buffService.applyBuff(attacker, {
-      name: 'Protection',
-      duration: 3,
-      effect: {
-        type: 'reduceDefense',
-        value: -0.3 * defender.stats.getDefensePower(),
-      },
+    const buff = new Buff('Protection', 3, {
+      type: 'reduceDefense',
+      value: -0.3 * defender.stats.getDefensePower(),
     });
+
+    this.buffService.applyBuff(attacker, buff);
     return new FightStep(
       attacker,
       defender,

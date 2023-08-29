@@ -2,6 +2,7 @@ import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
 import { FightStep } from '../entities/fight.entity';
+import { Buff } from '../entities/buff.entity';
 
 export class Distract implements Skill {
   activationChance = 10;
@@ -21,11 +22,8 @@ export class Distract implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    this.buffService.applyBuff(defender, {
-      name: 'Distracted',
-      duration: 1,
-      effect: null,
-    });
+    const buff = new Buff('Distracted', 1, null);
+    this.buffService.applyBuff(defender, buff);
     return new FightStep(
       attacker,
       defender,

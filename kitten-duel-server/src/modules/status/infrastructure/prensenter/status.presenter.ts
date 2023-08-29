@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class StatusInterace {
+export class StatusPresenter {
   @ApiProperty()
   code: number;
   @ApiProperty()

@@ -2,6 +2,7 @@ import { Skill, SkillArgs } from './skill.interface';
 import { FightStep } from '../entities/fight.entity';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
+import { Buff } from '../entities/buff.entity';
 
 export class NineLives implements Skill {
   constructor(
@@ -22,11 +23,9 @@ export class NineLives implements Skill {
   execute({ attacker, defender }: SkillArgs): FightStep {
     const healing = attacker.healthSystem.maxHp * 0.5;
     attacker.healthSystem.hp = healing;
-    this.buffService.applyBuff(attacker, {
-      name: 'NineLives',
-      duration: 1,
-      effect: null,
-    });
+
+    const buff = new Buff('NineLives', 1, null);
+    this.buffService.applyBuff(attacker, buff);
     return new FightStep(
       attacker,
       defender,

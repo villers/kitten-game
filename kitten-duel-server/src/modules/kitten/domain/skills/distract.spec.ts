@@ -1,10 +1,11 @@
 import { Distract } from './distract';
-import { Buff, BuffService } from '../services/buff.service';
+import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
 import { FightStep } from '../entities/fight.entity';
 import { mock, Mock } from 'ts-jest-mocker';
 import { Kitten } from '../entities/kitten.entity';
 import { SkillArgs } from './skill.interface';
+import { Buff } from '../entities/buff.entity';
 
 jest.mock('../services/buff.service');
 jest.mock('../services/random.service');

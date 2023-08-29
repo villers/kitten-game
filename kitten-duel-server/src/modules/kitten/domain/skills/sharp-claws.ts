@@ -2,6 +2,7 @@ import { FightStep } from '../entities/fight.entity';
 import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
+import { Buff } from '../entities/buff.entity';
 
 export class SharpClaws implements Skill {
   static activationChance = 10;
@@ -16,14 +17,12 @@ export class SharpClaws implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    this.buffService.applyBuff(attacker, {
-      name: 'GriffesAcerées',
-      duration: 3,
-      effect: {
-        type: 'increaseAttack',
-        value: 0.5 * attacker.stats.getAttackPower(),
-      },
+    const buff = new Buff('GriffesAcerées', 3, {
+      type: 'increaseAttack',
+      value: 0.5 * attacker.stats.getAttackPower(),
     });
+
+    this.buffService.applyBuff(attacker, buff);
     return new FightStep(
       attacker,
       defender,

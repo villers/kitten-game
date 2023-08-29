@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { StatusInterace } from '../../domain/interface/StatusInterace';
+import { StatusPresenter } from '../prensenter/status.presenter';
 
 @ApiTags('status')
 @Controller('status')
@@ -10,10 +10,10 @@ export class StatusController {
   @Get('')
   @ApiResponse({
     status: 200,
-    description: 'Returns the winning kitten.',
-    type: StatusInterace,
+    description: 'Returns the status of the server.',
+    type: StatusPresenter,
   })
-  getStatus(): StatusInterace {
+  getStatus(): StatusPresenter {
     return {
       code: 200,
       label: '✅ Server is working successfully !',
