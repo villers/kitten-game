@@ -1,57 +1,6 @@
+import { FightStep } from './fight-step.entity';
 import { Kitten } from './kitten.entity';
-import { BASE_XP } from './leveling-system.entity'; //
-
-export type StepAction =
-  | 'distract'
-  | 'esquive'
-  | 'raté'
-  | 'furySwipe'
-  | 'hairball'
-  | 'mysticalMeow'
-  | 'naptime'
-  | 'nineLives'
-  | 'pounce'
-  | 'protectivePurr'
-  | 'sharpClaws'
-  | 'purrHealing'
-  | 'attaque'
-  | 'coup critique';
-
-export class FightStep {
-  action: StepAction;
-  attacker: Kitten;
-  defender: Kitten;
-  damageDealt: number;
-  healAmount?: number;
-  description: string;
-
-  constructor(
-    attacker: Kitten,
-    defender: Kitten,
-    action: StepAction,
-    damageDealt: number,
-    healAmount: number,
-    description: string,
-  ) {
-    this.attacker = attacker.clone();
-    this.defender = defender.clone();
-    this.action = action;
-    this.damageDealt = damageDealt;
-    this.healAmount = healAmount;
-    this.description = description;
-  }
-
-  clone(): FightStep {
-    return new FightStep(
-      this.attacker,
-      this.defender,
-      this.action,
-      this.damageDealt,
-      this.healAmount,
-      this.description,
-    );
-  }
-}
+import { BASE_XP } from './leveling-system.entity';
 
 export class FightEntity {
   id: string;
@@ -65,6 +14,7 @@ export class FightEntity {
   constructor(partial?: Partial<FightEntity>) {
     Object.assign(this, partial);
   }
+
   addSteps(steps: FightStep[]): void {
     this.steps = this.steps.concat(steps);
   }
@@ -96,15 +46,15 @@ export class FightEntity {
     return 0.5;
   }
 
-  clone(): FightEntity {
-    return new FightEntity({
+  toJSON(): any {
+    return {
       id: this.id,
-      attacker: this.attacker.clone(),
-      defender: this.defender.clone(),
-      winner: this.winner.clone(),
-      looser: this.looser.clone(),
+      attacker: this.attacker,
+      defender: this.defender,
+      winner: this.winner,
+      looser: this.looser,
       xpGained: this.xpGained,
-      steps: this.steps.map((step) => step.clone()),
-    });
+      steps: this.steps.map((step) => step.toJSON()),
+    };
   }
 }

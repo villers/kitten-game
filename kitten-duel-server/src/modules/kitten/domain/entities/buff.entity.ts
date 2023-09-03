@@ -1,5 +1,11 @@
 export type BuffEffect = {
-  type: 'increaseAttack' | 'reduceDefense' | 'heal' | 'damage' | 'reduceAttack';
+  type:
+    | 'increaseAttack'
+    | 'increaseDefense'
+    | 'reduceDefense'
+    | 'heal'
+    | 'damage'
+    | 'reduceAttack';
   value: number;
 };
 

@@ -1,8 +1,14 @@
 import { Kitten } from '../entities/kitten.entity';
-import { FightStep } from '../entities/fight.entity';
 import { SkillRegistry } from '../skills/skill.registry';
 import { RandomService } from './random.service';
 import { BuffService } from './buff.service';
+import { FightStep } from '../entities/fight-step.entity';
+import {
+  ActionDetails,
+  ActionOutcome,
+  ActionType,
+  AttackDetails,
+} from '../entities/action-details.entity';
 
 export class FightService {
   constructor(
@@ -51,12 +57,14 @@ export class FightService {
     attacker: Kitten,
     defender: Kitten,
   ): FightStep {
+    const actionDetails: ActionDetails = {};
+
     return new FightStep(
       attacker,
       defender,
-      'distract',
-      0,
-      0,
+      ActionOutcome.Missed,
+      ActionType.Attack,
+      actionDetails,
       'Le chaton est distrait et saute son tour!',
     );
   }
@@ -93,30 +101,52 @@ export class FightService {
       );
 
       defender.healthSystem.dealDamage(damage);
+
+      const outcome = isCritical
+        ? ActionOutcome.CriticalHit
+        : ActionOutcome.Success;
+      const actionDetails: AttackDetails = {
+        damageDealt: damage,
+        criticalHit: isCritical,
+        criticalMultiplier: criticalModifier,
+      };
+
       return new FightStep(
         attacker,
         defender,
-        isCritical ? 'coup critique' : 'attaque',
-        damage,
-        0,
+        outcome,
+        ActionType.Attack,
+        actionDetails,
         isCritical ? 'Coup critique!' : 'Attaque réussie!',
       );
     } else if (dodgeChance <= defender.stats.getDodgeChance()) {
+      const actionDetails: AttackDetails = {
+        damageDealt: 0,
+        criticalHit: false,
+        criticalMultiplier: 1,
+      };
+
       return new FightStep(
         attacker,
         defender,
-        'esquive',
-        0,
-        0,
+        ActionOutcome.Evaded,
+        ActionType.Attack,
+        actionDetails,
         'Esquive réussie!',
       );
     } else {
+      const actionDetails: AttackDetails = {
+        damageDealt: 0,
+        criticalHit: false,
+        criticalMultiplier: 1,
+      };
+
       return new FightStep(
         attacker,
         defender,
-        'raté',
-        0,
-        0,
+        ActionOutcome.Missed,
+        ActionType.Attack,
+        actionDetails,
         'Attaque manquée!',
       );
     }

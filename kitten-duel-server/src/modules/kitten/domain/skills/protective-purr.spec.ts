@@ -1,13 +1,13 @@
 import { ProtectivePurr } from './protective-purr';
 import { RandomService } from '../services/random.service';
 import { BuffService } from '../services/buff.service';
-import { FightStep } from '../entities/fight.entity';
 import { mock, Mock } from 'ts-jest-mocker';
 import { Kitten } from '../entities/kitten.entity';
 import { Stats } from '../entities/stats.entity';
 import { SkillArgs } from './skill.interface';
 import { HealthSystem } from '../entities/health-system.entity';
 import { LevelingSystem } from '../entities/leveling-system.entity';
+import { FightStep } from '../entities/fight-step.entity';
 
 jest.mock('../services/random.service');
 jest.mock('../services/buff.service');
@@ -55,8 +55,8 @@ describe('ProtectivePurr', () => {
         name: 'Protection',
         duration: 3,
         effect: {
-          type: 'reduceDefense',
-          value: -0.3 * skillArgs.defender.stats.getDefensePower(),
+          type: 'increaseDefense',
+          value: 0.3 * skillArgs.defender.stats.getDefensePower(),
         },
       });
       expect(fightStep).toBeInstanceOf(FightStep);

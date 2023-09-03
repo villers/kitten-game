@@ -1,8 +1,13 @@
 import { Skill, SkillArgs } from './skill.interface';
-import { FightStep } from '../entities/fight.entity';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
 import { Buff } from '../entities/buff.entity';
+import { FightStep } from '../entities/fight-step.entity';
+import {
+  ActionOutcome,
+  ActionType,
+  SpellDetails,
+} from '../entities/action-details.entity';
 
 export class NineLives implements Skill {
   constructor(
@@ -26,12 +31,21 @@ export class NineLives implements Skill {
 
     const buff = new Buff('NineLives', 1, null);
     this.buffService.applyBuff(attacker, buff);
+
+    const actionDetails: SpellDetails = {
+      buffsApplied: [buff],
+      damageDealt: 0,
+      debuffsApplied: [],
+      healAmount: healing,
+      spellName: 'Nine Lives',
+    };
+
     return new FightStep(
       attacker,
       defender,
-      'nineLives',
-      0,
-      healing,
+      ActionOutcome.Success,
+      ActionType.Heal,
+      actionDetails,
       'Neuf vies! Récupération à 50% de la santé.',
     );
   }

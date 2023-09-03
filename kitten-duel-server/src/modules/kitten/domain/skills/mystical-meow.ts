@@ -1,8 +1,14 @@
-import { FightStep } from '../entities/fight.entity';
 import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
 import { Buff } from '../entities/buff.entity';
+import { FightStep } from '../entities/fight-step.entity';
+import {
+  ActionDetails,
+  ActionOutcome,
+  ActionType,
+  SpellDetails,
+} from '../entities/action-details.entity';
 
 export class MysticalMeow implements Skill {
   static activationChance = 15;
@@ -17,18 +23,27 @@ export class MysticalMeow implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    const buff = new Buff('Confused', 2, {
+    const debuff = new Buff('Confused', 2, {
       type: 'reduceAttack',
       value: -0.5 * defender.stats.getAttackPower(),
     });
 
-    this.buffService.applyBuff(defender, buff);
+    this.buffService.applyBuff(defender, debuff);
+
+    const actionDetails: SpellDetails = {
+      buffsApplied: [],
+      damageDealt: 0,
+      debuffsApplied: [debuff],
+      healAmount: 0,
+      spellName: 'Mystical Meow',
+    };
+
     return new FightStep(
       attacker,
       defender,
-      'mysticalMeow',
-      0,
-      0,
+      ActionOutcome.Success,
+      ActionType.Spell,
+      actionDetails,
       "Miaulement mystique! L'adversaire est confus et sa chance d'attaquer est réduite.",
     );
   }

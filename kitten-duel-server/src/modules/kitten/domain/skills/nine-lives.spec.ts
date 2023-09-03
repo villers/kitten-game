@@ -1,13 +1,13 @@
 import { NineLives } from './nine-lives';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
-import { FightStep } from '../entities/fight.entity';
 import { Kitten } from '../entities/kitten.entity';
 import { HealthSystem } from '../entities/health-system.entity';
 import { Stats } from '../entities/stats.entity';
 import { SkillArgs } from './skill.interface';
 import { LevelingSystem } from '../entities/leveling-system.entity';
 import { mock, Mock } from 'ts-jest-mocker';
+import { FightStep } from '../entities/fight-step.entity';
 
 jest.mock('../services/random.service');
 jest.mock('../services/buff.service');

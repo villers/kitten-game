@@ -1,8 +1,13 @@
 import { Skill, SkillArgs } from './skill.interface';
 import { BuffService } from '../services/buff.service';
 import { RandomService } from '../services/random.service';
-import { FightStep } from '../entities/fight.entity';
 import { Buff } from '../entities/buff.entity';
+import { FightStep } from '../entities/fight-step.entity';
+import {
+  ActionOutcome,
+  ActionType,
+  SpellDetails,
+} from '../entities/action-details.entity';
 
 export class Distract implements Skill {
   activationChance = 10;
@@ -22,15 +27,23 @@ export class Distract implements Skill {
   }
 
   execute({ attacker, defender }: SkillArgs): FightStep {
-    const buff = new Buff('Distracted', 1, null);
-    this.buffService.applyBuff(defender, buff);
+    const debuff = new Buff('Distracted', 1, null);
+    this.buffService.applyBuff(defender, debuff);
+    const actionDetails: SpellDetails = {
+      buffsApplied: [],
+      damageDealt: 0,
+      debuffsApplied: [debuff],
+      healAmount: 0,
+      spellName: 'Distract',
+    };
+
     return new FightStep(
       attacker,
       defender,
-      'distract',
-      0,
-      0,
-      'Distraction! Le défenseur pourrait perdre son prochain tour.',
+      ActionOutcome.Success,
+      ActionType.Spell,
+      actionDetails,
+      'Le chaton est distrait!',
     );
   }
 }

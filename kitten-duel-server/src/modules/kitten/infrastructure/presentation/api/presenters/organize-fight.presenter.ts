@@ -32,15 +32,13 @@ class Kitten {
 
 class FightStep {
   @ApiProperty()
-  action: string;
+  actionType: any;
   @ApiProperty()
   attacker: Kitten;
   @ApiProperty()
   defender: Kitten;
   @ApiProperty()
-  damageDealt: number;
-  @ApiProperty()
-  healAmount: number;
+  actionDetails: any;
   @ApiProperty()
   description: string;
 }
@@ -126,7 +124,7 @@ export class OrganizeFightPresenter {
       },
       expGained: output.fight.xpGained,
       steps: output.fight.steps.map((step) => ({
-        action: step.action,
+        actionType: step.actionType,
         attacker: {
           id: step.attacker.id,
           name: step.attacker.name,
@@ -157,8 +155,7 @@ export class OrganizeFightPresenter {
           defeats: step.defender.levelingSystem.defeats,
           xp: step.defender.levelingSystem.xp,
         },
-        damageDealt: step.damageDealt,
-        healAmount: step.healAmount,
+        actionDetails: step.actionDetails,
         description: step.description,
       })),
     };

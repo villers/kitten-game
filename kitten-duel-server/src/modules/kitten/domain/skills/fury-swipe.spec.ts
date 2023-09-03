@@ -1,11 +1,11 @@
 import { FurySwipe } from './fury-swipe';
 import { RandomService } from '../services/random.service';
-import { FightStep } from '../entities/fight.entity';
 import { mock, Mock } from 'ts-jest-mocker';
 import { Kitten } from '../entities/kitten.entity';
 import { HealthSystem } from '../entities/health-system.entity';
 import { Stats } from '../entities/stats.entity';
 import { SkillArgs } from './skill.interface';
+import { FightStep } from '../entities/fight-step.entity';
 
 jest.mock('../services/random.service');
 

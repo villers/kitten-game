@@ -1,6 +1,11 @@
 import { Skill, SkillArgs } from './skill.interface';
-import { FightStep } from '../entities/fight.entity';
 import { RandomService } from '../services/random.service';
+import { FightStep } from '../entities/fight-step.entity';
+import {
+  ActionOutcome,
+  ActionType,
+  AttackDetails,
+} from '../entities/action-details.entity';
 
 export class Hairball implements Skill {
   static activationChance = 10;
@@ -13,16 +18,26 @@ export class Hairball implements Skill {
 
   execute({ attacker, defender }: SkillArgs): FightStep {
     const isCritical = Math.random() <= attacker.stats.getCriticalChance();
-    const damage = isCritical
-      ? 1.5 * attacker.stats.getAttackPower() * 0.5
-      : attacker.stats.getAttackPower() * 0.5;
+    const baseAttackPower = attacker.stats.getAttackPower() * 0.5;
+    const criticalModifier = isCritical ? 1.5 : 1;
+    const damage = baseAttackPower * criticalModifier;
     defender.healthSystem.dealDamage(damage);
+
+    const outcome = isCritical
+      ? ActionOutcome.CriticalHit
+      : ActionOutcome.Success;
+    const actionDetails: AttackDetails = {
+      damageDealt: damage,
+      criticalHit: isCritical,
+      criticalMultiplier: criticalModifier,
+    };
+
     return new FightStep(
       attacker,
       defender,
-      'hairball',
-      damage,
-      0,
+      outcome,
+      ActionType.Spell,
+      actionDetails,
       'Boule de poils lancée! Petite attaque surprise.',
     );
   }
