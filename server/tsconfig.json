@@ -16,6 +16,10 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@game/game": ["libs/game/src"],
+      "@game/game/*": ["libs/game/src/*"]
+    }
   }
 }

@@ -23,9 +23,10 @@ enum PetName {
 }
 
 model User {
-  id     String   @id @unique @db.Uuid
-  name   String   @db.VarChar(255)
-  brutes Kitten[]
+  id       Int      @id @default(autoincrement())
+  email    String   @unique @db.VarChar(255)
+  password String   @db.VarChar(255)
+  brutes   Kitten[]
 }
 
 model Kitten {
@@ -49,7 +50,7 @@ model Kitten {
   speedModifier     Float        @default(1)
   speedValue        Int          @default(0)
   user              User?        @relation(fields: [userId], references: [id])
-  userId            String?      @db.Uuid
+  userId            Int?
   weapons           WeaponName[] @default([])
   skills            SkillName[]  @default([])
 
