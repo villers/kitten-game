@@ -10,7 +10,7 @@ interface KittenOptions {
 
 export const kittenBuilder = ({
   id = 1,
-  name = 'brute-name',
+  name = 'kitten-name',
   user = userBuilder()
     .withId(1)
     .withEmail('user@gmail.com')

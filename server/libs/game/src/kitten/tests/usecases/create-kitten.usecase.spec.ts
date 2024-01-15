@@ -24,12 +24,16 @@ describe('Feature: Create a Kitten', () => {
       fixture.givenUsersExists([user]);
 
       await fixture.whenKittenIsCreate({
-        name: 'brute-name',
+        name: 'kitten-name',
         user: 1,
       });
 
       await fixture.thenKittenShouldBe(
-        kittenBuilder().withId(1).withName('brute-name').withUser(user).build(),
+        kittenBuilder()
+          .withId(1)
+          .withName('kitten-name')
+          .withUser(user)
+          .build(),
       );
     });
   });
