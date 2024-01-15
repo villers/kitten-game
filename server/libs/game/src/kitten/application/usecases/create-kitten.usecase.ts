@@ -1,7 +1,8 @@
 import { UserRepository } from '@game/game/user/application/user.repository';
-import { DuplicateEmailError, User } from '@game/game/user/domain/user';
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
 import { Kitten } from '@game/game/kitten/domain/kitten';
+
+export const BRUTE_STARTING_POINTS = 11;
 
 export class CreateKittenCommand {
   id?: number;
@@ -33,6 +34,9 @@ export class CreateKittenUseCase {
       createKittenCommand.name,
       user,
     );
+
+    kitten.calculateInitialStats();
+
     await this.kittenRepository.create(kitten);
   }
 }
