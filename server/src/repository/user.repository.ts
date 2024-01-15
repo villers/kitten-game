@@ -18,7 +18,13 @@ export class UserRepositoryPrisma implements UserRepository {
       },
     });
 
-    return Promise.resolve(User.fromData(updatedUser));
+    return Promise.resolve(
+      User.fromData({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        password: updatedUser.password,
+      }),
+    );
   }
   async findById(id: number): Promise<User> {
     const user = await this.prisma.user.findFirst({
@@ -27,7 +33,11 @@ export class UserRepositoryPrisma implements UserRepository {
       },
     });
 
-    return User.fromData(user);
+    return User.fromData({
+      id: user.id,
+      email: user.email,
+      password: user.password,
+    });
   }
 
   async create(user: User): Promise<User> {
@@ -35,7 +45,13 @@ export class UserRepositoryPrisma implements UserRepository {
       data: { email: user.email, password: user.password },
     });
 
-    return Promise.resolve(User.fromData(createdUser));
+    return Promise.resolve(
+      User.fromData({
+        id: createdUser.id,
+        email: createdUser.email,
+        password: createdUser.password,
+      }),
+    );
   }
 
   async emailExist(email: string): Promise<boolean> {
@@ -51,6 +67,12 @@ export class UserRepositoryPrisma implements UserRepository {
   async getAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany();
 
-    return users.map((user) => User.fromData(user));
+    return users.map((user) =>
+      User.fromData({
+        id: user.id,
+        email: user.email,
+        password: user.password,
+      }),
+    );
   }
 }

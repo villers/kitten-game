@@ -4,10 +4,13 @@ import { CreateUserUseCase } from '@game/game/user/application/usecases/create-u
 import { PrismaService } from './service/prisma.service';
 import { UserRepositoryPrisma } from './repository/user.repository';
 import { UpdateUserUseCase } from '@game/game/user/application/usecases/update-user.usecase';
+import { KittenRepositoryPrisma } from './repository/kitten.repository';
+import { CreateKittenUseCase } from '@game/game/kitten/application/usecases/create-kitten.usecase';
+import { KittenController } from './controller/kitten.controller';
 
 @Module({
   imports: [],
-  controllers: [UserController],
+  controllers: [UserController, KittenController],
   providers: [
     {
       provide: CreateUserUseCase,
@@ -23,8 +26,19 @@ import { UpdateUserUseCase } from '@game/game/user/application/usecases/update-u
       },
       inject: [UserRepositoryPrisma],
     },
+    {
+      provide: CreateKittenUseCase,
+      useFactory: (
+        kittenRepository: KittenRepositoryPrisma,
+        userRepository: UserRepositoryPrisma,
+      ) => {
+        return new CreateKittenUseCase(kittenRepository, userRepository);
+      },
+      inject: [KittenRepositoryPrisma, UserRepositoryPrisma],
+    },
     PrismaService,
     UserRepositoryPrisma,
+    KittenRepositoryPrisma,
   ],
 })
 export class AppModule {}
