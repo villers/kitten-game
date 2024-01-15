@@ -1,6 +1,7 @@
 # Formule
 
 ##
+
 # Kitten
 
 ## Create a kitten
@@ -75,9 +76,7 @@
     "gender": "male",
     "userId": "2bbc2904-53a1-4573-9631-35ea4f556703",
     "weapons": [],
-    "skills": [
-      "fistsOfFury"
-    ],
+    "skills": ["fistsOfFury"],
     "pets": [],
     "masterId": null,
     "pupilsCount": 0,
@@ -137,32 +136,32 @@
 1. Get name
 2. Check if name is no already taken
 3. Generate random stats
-  1. Default stats is
-      ```
-      level: 1
-      xp: 0
-      hp: 0
-      enduranceStat: 0
-      enduranceModifier: 1
-      enduranceValue: 0
-      strengthStat: 0
-      strengthModifier: 1
-      strengthValue: 0
-      agilityStat: 0
-      agilityModifier: 1
-      agilityValue: 0
-      speedStat: 0
-      speedModifier: 1
-      speedValue: 0
-      skills: []
-      ```
-  2. Set default available points to 11
-  3. Define 1 random bonus and add to Kitten (Skill, Pets, Weapon)
-  4. Add between random(2, 5) endurance and remove it to available points
-  5. Add min(random(2,5), available points - 2*2) strength and remove it to available points
-  6. Add min(random(2,5), available points - 2*2) agility and remove it to available points
-  7. Add available points to speed
-  8. Define hp to floor(50 + max(endurance, 0) + level * 0.25) * 6)
-  9. Save Kitten
-  10. Save random bonus
-4. Register kitten in DB
+4. Default stats is
+   ```
+   level: 1
+   xp: 0
+   hp: 0
+   enduranceStat: 0
+   enduranceModifier: 1
+   enduranceValue: 0
+   strengthStat: 0
+   strengthModifier: 1
+   strengthValue: 0
+   agilityStat: 0
+   agilityModifier: 1
+   agilityValue: 0
+   speedStat: 0
+   speedModifier: 1
+   speedValue: 0
+   skills: []
+   ```
+5. Set default available points to 11
+6. Define 1 random bonus and add to Kitten (Skill, Pets, Weapon)
+7. Add between random(2, 5) endurance and remove it to available points
+8. Add min(random(2,5), available points - 2\*2) strength and remove it to available points
+9. Add min(random(2,5), available points - 2\*2) agility and remove it to available points
+10. Add available points to speed
+11. Define hp to floor(50 + max(endurance, 0) + level _ 0.25) _ 6)
+12. Save Kitten
+13. Save random bonus
+14. Register kitten in DB

@@ -12,6 +12,9 @@ import { promisify } from 'util';
 import { UserRepositoryPrisma } from '../src/repository/user.repository';
 import { PrismaService } from '../src/service/prisma.service';
 import { userBuilder } from '@game/game/user/tests/user-builder';
+import { KittenRepositoryPrisma } from '../src/repository/kitten.repository';
+import { kittenBuilder } from '@game/game/kitten/tests/kitten-builder';
+import { Kitten } from '@game/game/kitten/domain/kitten';
 
 const asyncExec = promisify(exec);
 
@@ -19,6 +22,7 @@ describe('AppController (e2e)', () => {
   let container: StartedPostgreSqlContainer;
   let prismaClient: PrismaClient;
   let userRepositoryPrisma: UserRepositoryPrisma;
+  let kittenRepositoryPrisma: KittenRepositoryPrisma;
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -58,6 +62,9 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     userRepositoryPrisma = app.get<UserRepositoryPrisma>(UserRepositoryPrisma);
+    kittenRepositoryPrisma = app.get<KittenRepositoryPrisma>(
+      KittenRepositoryPrisma,
+    );
     await app.init();
     await prismaClient.user.deleteMany();
     await prismaClient.$executeRawUnsafe('TRUNCATE table "User" CASCADE');
@@ -95,5 +102,33 @@ describe('AppController (e2e)', () => {
         .withPassword('password2')
         .build(),
     );
+  });
+
+  it('/api/kitten (POST)', async () => {
+    const user = userBuilder()
+      .withEmail('user@gmail.com')
+      .withPassword('password')
+      .build();
+    const createdUser = await userRepositoryPrisma.create(user);
+
+    const kittenName = 'Moka';
+    await request(app.getHttpServer())
+      .post(`/api/kitten`)
+      .send({ name: 'Moka', user: createdUser.id })
+      .expect(201);
+
+    const kitten = await kittenRepositoryPrisma.findByName(kittenName);
+    console.log(kitten);
+    expect(kitten.user).toEqual(createdUser);
+    expect(kitten.name).toEqual(kittenName);
+    expect(kitten).toBeInstanceOf(Kitten);
+    expect(kitten.level).toBe(1);
+    expect(kitten.xp).toBe(0);
+    expect(kitten.hp).toBeGreaterThan(0); // Based on endurance
+    expect(kitten.enduranceStat).toBeGreaterThan(0);
+    expect(kitten.strengthStat).toBeGreaterThan(0);
+    expect(kitten.agilityStat).toBeGreaterThan(0);
+    expect(kitten.speedStat).toBeGreaterThan(0);
+    expect(kitten.weapons.length + kitten.skills.length).toBe(1);
   });
 });

@@ -18,13 +18,11 @@ export class UserRepositoryPrisma implements UserRepository {
       },
     });
 
-    return Promise.resolve(
-      User.fromData({
-        id: updatedUser.id,
-        email: updatedUser.email,
-        password: updatedUser.password,
-      }),
-    );
+    return User.fromData({
+      id: updatedUser.id,
+      email: updatedUser.email,
+      password: updatedUser.password,
+    });
   }
   async findById(id: number): Promise<User> {
     const user = await this.prisma.user.findFirst({
@@ -45,13 +43,11 @@ export class UserRepositoryPrisma implements UserRepository {
       data: { email: user.email, password: user.password },
     });
 
-    return Promise.resolve(
-      User.fromData({
-        id: createdUser.id,
-        email: createdUser.email,
-        password: createdUser.password,
-      }),
-    );
+    return User.fromData({
+      id: createdUser.id,
+      email: createdUser.email,
+      password: createdUser.password,
+    });
   }
 
   async emailExist(email: string): Promise<boolean> {

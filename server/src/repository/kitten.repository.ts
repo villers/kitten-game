@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../service/prisma.service';
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
-import { Kitten } from '@game/game/kitten/domain/kitten';
+import { Kitten, SkillName, WeaponName } from '@game/game/kitten/domain/kitten';
 import { User } from '@game/game/user/domain/user';
 
 @Injectable()
@@ -31,6 +31,23 @@ export class KittenRepositoryPrisma implements KittenRepository {
           email: updatedKitten.user.email,
           password: updatedKitten.user.password,
         }),
+        level: updatedKitten.level,
+        xp: updatedKitten.xp,
+        hp: updatedKitten.hp,
+        enduranceStat: updatedKitten.enduranceStat,
+        enduranceModifier: updatedKitten.enduranceModifier,
+        enduranceValue: updatedKitten.enduranceValue,
+        strengthStat: updatedKitten.strengthStat,
+        strengthModifier: updatedKitten.strengthModifier,
+        strengthValue: updatedKitten.strengthValue,
+        agilityStat: updatedKitten.agilityStat,
+        agilityModifier: updatedKitten.agilityModifier,
+        agilityValue: updatedKitten.agilityValue,
+        speedStat: updatedKitten.speedStat,
+        speedModifier: updatedKitten.speedModifier,
+        speedValue: updatedKitten.speedValue,
+        skills: updatedKitten.skills,
+        weapons: updatedKitten.weapons,
       }),
     );
   }
@@ -52,6 +69,23 @@ export class KittenRepositoryPrisma implements KittenRepository {
         email: kitten.user.email,
         password: kitten.user.password,
       }),
+      level: kitten.level,
+      xp: kitten.xp,
+      hp: kitten.hp,
+      enduranceStat: kitten.enduranceStat,
+      enduranceModifier: kitten.enduranceModifier,
+      enduranceValue: kitten.enduranceValue,
+      strengthStat: kitten.strengthStat,
+      strengthModifier: kitten.strengthModifier,
+      strengthValue: kitten.strengthValue,
+      agilityStat: kitten.agilityStat,
+      agilityModifier: kitten.agilityModifier,
+      agilityValue: kitten.agilityValue,
+      speedStat: kitten.speedStat,
+      speedModifier: kitten.speedModifier,
+      speedValue: kitten.speedValue,
+      skills: kitten.skills as SkillName[],
+      weapons: kitten.weapons as WeaponName[],
     });
   }
 
@@ -60,23 +94,55 @@ export class KittenRepositoryPrisma implements KittenRepository {
       data: {
         name: kitten.name,
         userId: kitten.user.id,
+        level: kitten.level,
+        xp: kitten.xp,
+        hp: kitten.hp,
+        enduranceStat: kitten.enduranceStat,
+        enduranceModifier: kitten.enduranceModifier,
+        enduranceValue: kitten.enduranceValue,
+        strengthStat: kitten.strengthStat,
+        strengthModifier: kitten.strengthModifier,
+        strengthValue: kitten.strengthValue,
+        agilityStat: kitten.agilityStat,
+        agilityModifier: kitten.agilityModifier,
+        agilityValue: kitten.agilityValue,
+        speedStat: kitten.speedStat,
+        speedModifier: kitten.speedModifier,
+        speedValue: kitten.speedValue,
+        skills: kitten.skills,
+        weapons: kitten.weapons,
       },
       include: {
         user: true,
       },
     });
 
-    return Promise.resolve(
-      Kitten.fromData({
-        id: createdKitten.id,
-        name: createdKitten.name,
-        user: User.fromData({
-          id: createdKitten.user.id,
-          email: createdKitten.user.email,
-          password: createdKitten.user.password,
-        }),
+    return Kitten.fromData({
+      id: createdKitten.id,
+      name: createdKitten.name,
+      user: User.fromData({
+        id: createdKitten.user.id,
+        email: createdKitten.user.email,
+        password: createdKitten.user.password,
       }),
-    );
+      level: createdKitten.level,
+      xp: createdKitten.xp,
+      hp: createdKitten.hp,
+      enduranceStat: createdKitten.enduranceStat,
+      enduranceModifier: createdKitten.enduranceModifier,
+      enduranceValue: createdKitten.enduranceValue,
+      strengthStat: createdKitten.strengthStat,
+      strengthModifier: createdKitten.strengthModifier,
+      strengthValue: createdKitten.strengthValue,
+      agilityStat: createdKitten.agilityStat,
+      agilityModifier: createdKitten.agilityModifier,
+      agilityValue: createdKitten.agilityValue,
+      speedStat: createdKitten.speedStat,
+      speedModifier: createdKitten.speedModifier,
+      speedValue: createdKitten.speedValue,
+      skills: createdKitten.skills,
+      weapons: createdKitten.weapons,
+    });
   }
 
   async nameExist(name: string): Promise<boolean> {
@@ -96,8 +162,8 @@ export class KittenRepositoryPrisma implements KittenRepository {
       },
     });
 
-    return kittens.map((kitten) =>
-      Kitten.fromData({
+    return kittens.map((kitten) => {
+      return Kitten.fromData({
         id: kitten.id,
         name: kitten.name,
         user: User.fromData({
@@ -105,7 +171,24 @@ export class KittenRepositoryPrisma implements KittenRepository {
           email: kitten.user.email,
           password: kitten.user.password,
         }),
-      }),
-    );
+        level: kitten.level,
+        xp: kitten.xp,
+        hp: kitten.hp,
+        enduranceStat: kitten.enduranceStat,
+        enduranceModifier: kitten.enduranceModifier,
+        enduranceValue: kitten.enduranceValue,
+        strengthStat: kitten.strengthStat,
+        strengthModifier: kitten.strengthModifier,
+        strengthValue: kitten.strengthValue,
+        agilityStat: kitten.agilityStat,
+        agilityModifier: kitten.agilityModifier,
+        agilityValue: kitten.agilityValue,
+        speedStat: kitten.speedStat,
+        speedModifier: kitten.speedModifier,
+        speedValue: kitten.speedValue,
+        skills: kitten.skills,
+        weapons: kitten.weapons,
+      });
+    });
   }
 }
