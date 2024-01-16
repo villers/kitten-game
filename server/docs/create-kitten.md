@@ -1,8 +1,4 @@
-# Formule
-
-##
-
-# Kitten
+# Create Kitten
 
 ## Create a kitten
 
