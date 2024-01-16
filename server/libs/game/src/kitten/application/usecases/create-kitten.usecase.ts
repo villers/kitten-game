@@ -2,8 +2,6 @@ import { UserRepository } from '@game/game/user/application/user.repository';
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
 import { Kitten } from '@game/game/kitten/domain/kitten';
 
-export const BRUTE_STARTING_POINTS = 11;
-
 export class CreateKittenCommand {
   id?: number;
   name: string;

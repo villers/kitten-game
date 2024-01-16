@@ -1,20 +1,17 @@
 import { User } from '@game/game/user/domain/user';
-import { BRUTE_STARTING_POINTS } from '@game/game/kitten/application/usecases/create-kitten.usecase';
 import { randomBetween } from '@game/game/kitten/utils/random';
 
-export const SkillName: {
-  felineAgility: 'felineAgility';
-} = {
-  felineAgility: 'felineAgility',
-};
-export type SkillName = (typeof SkillName)[keyof typeof SkillName];
+export const BRUTE_STARTING_POINTS = 11;
 
-export const WeaponName: {
-  sword: 'sword';
-} = {
-  sword: 'sword',
-};
-export type WeaponName = (typeof WeaponName)[keyof typeof WeaponName];
+export enum SkillNameEnum {
+  felineAgility = 'felineAgility',
+}
+export type SkillName = keyof typeof SkillNameEnum;
+
+export enum WeaponNameEnum {
+  sword = 'sword',
+}
+export type WeaponName = keyof typeof WeaponNameEnum;
 
 export class Kitten {
   constructor(
@@ -215,12 +212,12 @@ export class Kitten {
 
   private getRandomBonus(): { type: 'skill' | 'weapon'; name: string } {
     return Math.random() > 0.5
-      ? { type: 'skill', name: SkillName.felineAgility }
-      : { type: 'weapon', name: WeaponName.sword };
+      ? { type: 'skill', name: SkillNameEnum.felineAgility }
+      : { type: 'weapon', name: WeaponNameEnum.sword };
   }
 
   private applySkillModifiers(skill: string) {
-    if (skill === SkillName.felineAgility) {
+    if (skill === SkillNameEnum.felineAgility) {
       this.editAgilityModifier(this.agilityModifier * 1.5);
       this.editAgilityStat(3);
     }
