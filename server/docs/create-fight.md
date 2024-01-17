@@ -26,14 +26,14 @@
    1. continue fight if no looser
    2. select order fighers (random if equal)
    3.
-   2.
+   4.
 7. Save fight
 8. Calculate XP
-    ```
-    Get XP gained (0 for non arena fights)
-    (+2 for a win against a brute at least 2 level below you)
-    (+1 for a win against a brute at least 10 level below you)
-    (+0 otherwise)
-    ```
+   ```
+   Get XP gained (0 for non arena fights)
+   (+2 for a win against a brute at least 2 level below you)
+   (+1 for a win against a brute at least 10 level below you)
+   (+0 otherwise)
+   ```
 9. Save xp and increase victories to kitten1
 10. Create and save a log for winner and for looser

@@ -5,6 +5,7 @@ import {
 } from '@game/game/user/tests/user-fixture';
 import {
   DuplicateEmailError,
+  EmailIsEmptyError,
   InvalidEmailError,
   PasswordCannotBeEmptyError,
   PasswordMustBeAtLeast6CharactersError,
@@ -48,7 +49,7 @@ describe('Feature: Update a User', () => {
         password: 'password',
       });
 
-      fixture.thenErrorShouldBe(InvalidEmailError);
+      fixture.thenErrorShouldBe(EmailIsEmptyError);
     });
 
     test('Should return error if email is invalid', async () => {

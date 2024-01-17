@@ -1,5 +1,6 @@
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
 import { Kitten } from '@game/game/kitten/domain/kitten';
+import { User } from '@game/game/user/domain/user';
 
 export class InMemoryKittenRepository implements KittenRepository {
   private autoincrement = 1;
@@ -27,6 +28,10 @@ export class InMemoryKittenRepository implements KittenRepository {
 
   async findById(id: number): Promise<Kitten> {
     return Promise.resolve(this.kittens.get(id));
+  }
+
+  givenExistingKittens(kittens: Kitten[]) {
+    kittens.forEach(this.save.bind(this));
   }
 
   private save(kitten: Kitten) {

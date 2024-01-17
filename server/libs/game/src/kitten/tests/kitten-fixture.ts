@@ -47,6 +47,9 @@ export const CreateKittenFixture = () => {
     givenUsersExists(users: User[]) {
       userRepository.givenExistingUser(users);
     },
+    givenKittenExists(kittens: Kitten[]) {
+      kittenRepository.givenExistingKittens(kittens);
+    },
     thenErrorShouldBe(expectedErrorClass: new () => Error) {
       expect(thrownError).toBeInstanceOf(expectedErrorClass);
     },

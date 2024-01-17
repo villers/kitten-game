@@ -1,6 +1,10 @@
 import { UserRepository } from '@game/game/user/application/user.repository';
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
-import { Kitten } from '@game/game/kitten/domain/kitten';
+import {
+  Kitten,
+  KittenCreatedUserNotFoundError,
+  KittenNameAlreadyExistError,
+} from '@game/game/kitten/domain/kitten';
 
 export class CreateKittenCommand {
   id?: number;
@@ -17,14 +21,18 @@ export class CreateKittenUseCase {
   async handle(createKittenCommand: CreateKittenCommand) {
     const user = await this.userRepository.findById(createKittenCommand.user);
     if (!user) {
-      throw new Error('User not found');
+      throw new KittenCreatedUserNotFoundError(
+        'Can create a kitten without a user',
+      );
     }
 
     const existingKitten = await this.kittenRepository.nameExist(
       createKittenCommand.name,
     );
     if (existingKitten) {
-      throw new Error('Kitten with the same name already exists');
+      throw new KittenNameAlreadyExistError(
+        'Kitten with the same name already exists',
+      );
     }
 
     const kitten = new Kitten(

@@ -1,4 +1,5 @@
 export class DuplicateEmailError extends Error {}
+export class EmailIsEmptyError extends Error {}
 export class InvalidEmailError extends Error {}
 export class PasswordCannotBeEmptyError extends Error {}
 export class PasswordMustBeAtLeast6CharactersError extends Error {}
@@ -59,6 +60,10 @@ export class EmailText {
   }
 
   static of(text: string) {
+    if (text.trim().length === 0) {
+      throw new EmailIsEmptyError('Email cannot be empty');
+    }
+
     if (!this.isValid(text)) {
       throw new InvalidEmailError('Email must be valid');
     }
