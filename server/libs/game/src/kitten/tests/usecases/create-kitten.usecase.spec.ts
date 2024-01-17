@@ -5,19 +5,19 @@ import {
 import { userBuilder } from '@game/game/user/tests/user-builder';
 import { kittenBuilder } from '@game/game/kitten/tests/kitten-builder';
 import {
-  KittenCreatedUserNotFoundError,
+  UserNotFoundForKittenCreationError,
   KittenNameAlreadyExistError,
 } from '@game/game/kitten/domain/kitten';
 
-describe('Feature: Create a Kitten', () => {
+describe('Feature: Kitten Creation', () => {
   let fixture: KittenFixture;
 
   beforeEach(() => {
     fixture = CreateKittenFixture();
   });
 
-  describe('Rule: A Kitten can be created', () => {
-    test('With all required input', async () => {
+  describe('Kitten Creation Rules', () => {
+    test('creates a kitten with valid details', async () => {
       const user = userBuilder()
         .withId(1)
         .withEmail('user@gmail.com')
@@ -41,7 +41,7 @@ describe('Feature: Create a Kitten', () => {
       );
     });
 
-    test('Should fail if user does not exist', async () => {
+    test('fails when user does not exist', async () => {
       fixture.givenDateIs(new Date(2024, 1, 14, 10, 0, 0, 0));
 
       await fixture.whenKittenIsCreate({
@@ -49,10 +49,10 @@ describe('Feature: Create a Kitten', () => {
         user: 1,
       });
 
-      fixture.thenErrorShouldBe(KittenCreatedUserNotFoundError);
+      fixture.thenErrorShouldBe(UserNotFoundForKittenCreationError);
     });
 
-    test('Should fail if kitten name already exists', async () => {
+    test('fails if kitten name already exists', async () => {
       const user = userBuilder()
         .withId(1)
         .withEmail('user@gmail.com')

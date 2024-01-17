@@ -1,7 +1,7 @@
 import { User } from '@game/game/user/domain/user';
 import { randomBetween } from '@game/game/kitten/utils/random';
 
-export class KittenCreatedUserNotFoundError extends Error {}
+export class UserNotFoundForKittenCreationError extends Error {}
 export class KittenNameAlreadyExistError extends Error {}
 
 export const BRUTE_STARTING_POINTS = 11;

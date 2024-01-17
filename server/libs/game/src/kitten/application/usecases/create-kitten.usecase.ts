@@ -2,7 +2,7 @@ import { UserRepository } from '@game/game/user/application/user.repository';
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
 import {
   Kitten,
-  KittenCreatedUserNotFoundError,
+  UserNotFoundForKittenCreationError,
   KittenNameAlreadyExistError,
 } from '@game/game/kitten/domain/kitten';
 
@@ -21,7 +21,7 @@ export class CreateKittenUseCase {
   async handle(createKittenCommand: CreateKittenCommand) {
     const user = await this.userRepository.findById(createKittenCommand.user);
     if (!user) {
-      throw new KittenCreatedUserNotFoundError(
+      throw new UserNotFoundForKittenCreationError(
         'Can create a kitten without a user',
       );
     }

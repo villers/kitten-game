@@ -4,22 +4,22 @@ import {
   CreateUserFixture,
 } from '@game/game/user/tests/user-fixture';
 import {
-  DuplicateEmailError,
-  EmailIsEmptyError,
-  InvalidEmailError,
-  PasswordCannotBeEmptyError,
-  PasswordMustBeAtLeast6CharactersError,
+  UserEmailAlreadyInUseError,
+  UserEmailRequiredError,
+  UserInvalidEmailFormatError,
+  UserPasswordRequiredError,
+  UserPasswordTooShortError,
 } from '@game/game/user/domain/user';
 
-describe('Feature: Create a User', () => {
+describe('Feature: User Creation', () => {
   let fixture: UserFixture;
 
   beforeEach(() => {
     fixture = CreateUserFixture();
   });
 
-  describe('Rule: A user can be created', () => {
-    test('With all required input', async () => {
+  describe('User Creation Validations', () => {
+    test('creates a user with valid credentials', async () => {
       fixture.givenDateIs(new Date(2024, 1, 14, 10, 0, 0, 0));
 
       await fixture.whenUserIsCreate({
@@ -37,7 +37,7 @@ describe('Feature: Create a User', () => {
       );
     });
 
-    test('Should return error if email is empty', async () => {
+    test('fails when email is missing', async () => {
       fixture.givenDateIs(new Date(2024, 1, 14, 10, 0, 0, 0));
 
       await fixture.whenUserIsCreate({
@@ -46,10 +46,10 @@ describe('Feature: Create a User', () => {
         password: 'password',
       });
 
-      fixture.thenErrorShouldBe(EmailIsEmptyError);
+      fixture.thenErrorShouldBe(UserEmailRequiredError);
     });
 
-    test('Should return error if email is invalid', async () => {
+    test('fails with invalid email format', async () => {
       fixture.givenDateIs(new Date(2024, 1, 14, 10, 0, 0, 0));
 
       await fixture.whenUserIsCreate({
@@ -58,10 +58,10 @@ describe('Feature: Create a User', () => {
         password: 'password',
       });
 
-      fixture.thenErrorShouldBe(InvalidEmailError);
+      fixture.thenErrorShouldBe(UserInvalidEmailFormatError);
     });
 
-    test('Should return error when email is already used', async () => {
+    test('fails when email is already in use', async () => {
       fixture.givenDateIs(new Date(2024, 1, 14, 10, 0, 0, 0));
 
       const user = userBuilder().withEmail('email@gmail.com');
@@ -73,10 +73,10 @@ describe('Feature: Create a User', () => {
         password: 'password',
       });
 
-      fixture.thenErrorShouldBe(DuplicateEmailError);
+      fixture.thenErrorShouldBe(UserEmailAlreadyInUseError);
     });
 
-    test('Should return error if password is empty', async () => {
+    test('fails when password is missing', async () => {
       fixture.givenDateIs(new Date(2024, 1, 14, 10, 0, 0, 0));
 
       await fixture.whenUserIsCreate({
@@ -85,10 +85,10 @@ describe('Feature: Create a User', () => {
         password: '',
       });
 
-      fixture.thenErrorShouldBe(PasswordCannotBeEmptyError);
+      fixture.thenErrorShouldBe(UserPasswordRequiredError);
     });
 
-    test('Should return error if password is lower than 6 characters', async () => {
+    test('fails with password shorter than 6 characters', async () => {
       fixture.givenDateIs(new Date(2024, 1, 14, 10, 0, 0, 0));
 
       await fixture.whenUserIsCreate({
@@ -97,7 +97,7 @@ describe('Feature: Create a User', () => {
         password: '12345',
       });
 
-      fixture.thenErrorShouldBe(PasswordMustBeAtLeast6CharactersError);
+      fixture.thenErrorShouldBe(UserPasswordTooShortError);
     });
   });
 });

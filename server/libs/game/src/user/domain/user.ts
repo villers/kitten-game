@@ -1,8 +1,8 @@
-export class DuplicateEmailError extends Error {}
-export class EmailIsEmptyError extends Error {}
-export class InvalidEmailError extends Error {}
-export class PasswordCannotBeEmptyError extends Error {}
-export class PasswordMustBeAtLeast6CharactersError extends Error {}
+export class UserEmailAlreadyInUseError extends Error {}
+export class UserEmailRequiredError extends Error {}
+export class UserInvalidEmailFormatError extends Error {}
+export class UserPasswordRequiredError extends Error {}
+export class UserPasswordTooShortError extends Error {}
 
 export class User {
   constructor(
@@ -61,11 +61,11 @@ export class EmailText {
 
   static of(text: string) {
     if (text.trim().length === 0) {
-      throw new EmailIsEmptyError('Email cannot be empty');
+      throw new UserEmailRequiredError('Email cannot be empty');
     }
 
     if (!this.isValid(text)) {
-      throw new InvalidEmailError('Email must be valid');
+      throw new UserInvalidEmailFormatError('Email must be valid');
     }
 
     return new EmailText(text);
@@ -77,11 +77,11 @@ export class PasswordText {
 
   static of(text: string) {
     if (text.trim().length === 0) {
-      throw new PasswordCannotBeEmptyError('Password cannot be empty');
+      throw new UserPasswordRequiredError('Password cannot be empty');
     }
 
     if (text.trim().length < 6) {
-      throw new PasswordMustBeAtLeast6CharactersError(
+      throw new UserPasswordTooShortError(
         'Password must be at least 6 characters long',
       );
     }

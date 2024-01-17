@@ -1,5 +1,5 @@
 import { UserRepository } from '@game/game/user/application/user.repository';
-import { DuplicateEmailError, User } from '@game/game/user/domain/user';
+import { UserEmailAlreadyInUseError, User } from '@game/game/user/domain/user';
 
 export class CreateUserCommand {
   id?: number;
@@ -15,7 +15,7 @@ export class CreateUserUseCase {
       createUserCommand.email,
     );
     if (emailExist) {
-      throw new DuplicateEmailError();
+      throw new UserEmailAlreadyInUseError();
     }
     await this.userRepository.create(
       User.fromData({

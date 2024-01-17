@@ -1,5 +1,5 @@
 import { UserRepository } from '@game/game/user/application/user.repository';
-import { DuplicateEmailError, User } from '@game/game/user/domain/user';
+import { UserEmailAlreadyInUseError, User } from '@game/game/user/domain/user';
 
 export class UpdateUserCommand {
   id: number;
@@ -17,7 +17,7 @@ export class UpdateUserUseCase {
         updateUserCommand.email,
       );
       if (emailExist) {
-        throw new DuplicateEmailError();
+        throw new UserEmailAlreadyInUseError();
       }
     }
     await this.userRepository.update(
