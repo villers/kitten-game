@@ -13,7 +13,6 @@ import { UserRepositoryPrisma } from '../src/repository/user.repository';
 import { PrismaService } from '../src/service/prisma.service';
 import { userBuilder } from '@game/game/user/tests/user-builder';
 import { KittenRepositoryPrisma } from '../src/repository/kitten.repository';
-import { kittenBuilder } from '@game/game/kitten/tests/kitten-builder';
 import { Kitten } from '@game/game/kitten/domain/kitten';
 
 const asyncExec = promisify(exec);
@@ -125,10 +124,10 @@ describe('AppController (e2e)', () => {
     expect(kitten.level).toBe(1);
     expect(kitten.xp).toBe(0);
     expect(kitten.hp).toBeGreaterThan(0); // Based on endurance
-    expect(kitten.enduranceStat).toBeGreaterThan(0);
-    expect(kitten.strengthStat).toBeGreaterThan(0);
-    expect(kitten.agilityStat).toBeGreaterThan(0);
-    expect(kitten.speedStat).toBeGreaterThan(0);
+    expect(kitten.endurance.finalValue).toBeGreaterThan(0);
+    expect(kitten.strength.finalValue).toBeGreaterThan(0);
+    expect(kitten.agility.finalValue).toBeGreaterThan(0);
+    expect(kitten.speed.finalValue).toBeGreaterThan(0);
     expect(kitten.weapons.length + kitten.skills.length).toBe(1);
   });
 });

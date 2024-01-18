@@ -1,6 +1,7 @@
 import { User } from '@game/game/user/domain/user';
 import { Kitten, SkillName, WeaponName } from '@game/game/kitten/domain/kitten';
 import { userBuilder } from '@game/game/user/tests/user-builder';
+import { StatValue } from '@game/game/kitten/domain/stats-value';
 
 interface KittenOptions {
   id?: number;
@@ -9,18 +10,10 @@ interface KittenOptions {
   level?: number;
   xp?: number;
   hp?: number;
-  enduranceStat?: number;
-  enduranceModifier?: number;
-  enduranceValue?: number;
-  strengthStat?: number;
-  strengthModifier?: number;
-  strengthValue?: number;
-  agilityStat?: number;
-  agilityModifier?: number;
-  agilityValue?: number;
-  speedStat?: number;
-  speedModifier?: number;
-  speedValue?: number;
+  endurance?: StatValue;
+  strength?: StatValue;
+  agility?: StatValue;
+  speed?: StatValue;
   skills?: SkillName[];
   weapons?: WeaponName[];
 }
@@ -36,18 +29,10 @@ export const kittenBuilder = ({
   level = 1,
   xp = 0,
   hp = 0,
-  enduranceStat = 0,
-  enduranceModifier = 1,
-  enduranceValue = 0,
-  strengthStat = 0,
-  strengthModifier = 1,
-  strengthValue = 0,
-  agilityStat = 0,
-  agilityModifier = 1,
-  agilityValue = 0,
-  speedStat = 0,
-  speedModifier = 1,
-  speedValue = 0,
+  endurance = StatValue.of(0, 1),
+  strength = StatValue.of(0, 1),
+  agility = StatValue.of(0, 1),
+  speed = StatValue.of(0, 1),
   weapons = [],
   skills = [],
 }: KittenOptions = {}) => {
@@ -58,18 +43,10 @@ export const kittenBuilder = ({
     level,
     xp,
     hp,
-    enduranceStat,
-    enduranceModifier,
-    enduranceValue,
-    strengthStat,
-    strengthModifier,
-    strengthValue,
-    agilityStat,
-    agilityModifier,
-    agilityValue,
-    speedStat,
-    speedModifier,
-    speedValue,
+    endurance,
+    strength,
+    agility,
+    speed,
     skills,
     weapons,
   };
@@ -111,76 +88,28 @@ export const kittenBuilder = ({
         hp: _hp,
       });
     },
-    withEnduranceStat(_enduranceStat: number) {
+    withEndurance(_endurance: StatValue) {
       return kittenBuilder({
         ...props,
-        enduranceStat: _enduranceStat,
+        endurance: _endurance,
       });
     },
-    withEnduranceModifier(_enduranceModifier: number) {
+    withStrength(_strength: StatValue) {
       return kittenBuilder({
         ...props,
-        enduranceModifier: _enduranceModifier,
+        strength: _strength,
       });
     },
-    withEnduranceValue(_enduranceValue: number) {
+    withAgility(_agility: StatValue) {
       return kittenBuilder({
         ...props,
-        enduranceValue: _enduranceValue,
+        agility: _agility,
       });
     },
-    withStrengthStat(_strengthStat: number) {
+    withSpeed(_speed: StatValue) {
       return kittenBuilder({
         ...props,
-        strengthStat: _strengthStat,
-      });
-    },
-    withStrengthModifier(_strengthModifier: number) {
-      return kittenBuilder({
-        ...props,
-        strengthModifier: _strengthModifier,
-      });
-    },
-    withStrengthValue(_strengthValue: number) {
-      return kittenBuilder({
-        ...props,
-        strengthValue: _strengthValue,
-      });
-    },
-    withAgilityStat(_agilityStat: number) {
-      return kittenBuilder({
-        ...props,
-        agilityStat: _agilityStat,
-      });
-    },
-    withAgilityModifier(_agilityModifier: number) {
-      return kittenBuilder({
-        ...props,
-        agilityModifier: _agilityModifier,
-      });
-    },
-    withAgilityValue(_agilityValue: number) {
-      return kittenBuilder({
-        ...props,
-        agilityValue: _agilityValue,
-      });
-    },
-    withSpeedStat(_speedStat: number) {
-      return kittenBuilder({
-        ...props,
-        speedStat: _speedStat,
-      });
-    },
-    withSpeedModifier(_speedModifier: number) {
-      return kittenBuilder({
-        ...props,
-        speedModifier: _speedModifier,
-      });
-    },
-    withSpeedValue(_speedValue: number) {
-      return kittenBuilder({
-        ...props,
-        speedValue: _speedValue,
+        speed: _speed,
       });
     },
     withSkills(_skills: SkillName[]) {
@@ -204,18 +133,14 @@ export const kittenBuilder = ({
         level: props.level,
         xp: props.xp,
         hp: props.hp,
-        enduranceStat: props.enduranceStat,
-        enduranceModifier: props.enduranceModifier,
-        enduranceValue: props.enduranceValue,
-        strengthStat: props.strengthStat,
-        strengthModifier: props.strengthModifier,
-        strengthValue: props.strengthValue,
-        agilityStat: props.agilityStat,
-        agilityModifier: props.agilityModifier,
-        agilityValue: props.agilityValue,
-        speedStat: props.speedStat,
-        speedModifier: props.speedModifier,
-        speedValue: props.speedValue,
+        enduranceValue: props.endurance.value,
+        enduranceModifier: props.endurance.modifier,
+        strengthValue: props.strength.value,
+        strengthModifier: props.strength.modifier,
+        agilityValue: props.agility.value,
+        agilityModifier: props.agility.modifier,
+        speedValue: props.agility.value,
+        speedModifier: props.agility.modifier,
         skills: props.skills,
         weapons: props.weapons,
       });

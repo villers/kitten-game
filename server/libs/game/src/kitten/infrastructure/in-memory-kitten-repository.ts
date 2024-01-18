@@ -1,6 +1,5 @@
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
 import { Kitten } from '@game/game/kitten/domain/kitten';
-import { User } from '@game/game/user/domain/user';
 
 export class InMemoryKittenRepository implements KittenRepository {
   private autoincrement = 1;
@@ -8,11 +7,30 @@ export class InMemoryKittenRepository implements KittenRepository {
 
   async create(kitten: Kitten): Promise<Kitten> {
     if (!kitten.id) {
-      kitten.editId(this.autoincrement++);
+      kitten.id = this.autoincrement++;
     }
 
     this.save(kitten);
-    return Promise.resolve(Kitten.fromData(kitten));
+    return Promise.resolve(
+      Kitten.fromData({
+        id: kitten.id,
+        name: kitten.name,
+        user: kitten.user,
+        level: kitten.level,
+        xp: kitten.xp,
+        hp: kitten.hp,
+        enduranceValue: kitten.endurance.value,
+        enduranceModifier: kitten.endurance.modifier,
+        strengthValue: kitten.strength.value,
+        strengthModifier: kitten.strength.modifier,
+        agilityValue: kitten.agility.value,
+        agilityModifier: kitten.agility.modifier,
+        speedValue: kitten.speed.value,
+        speedModifier: kitten.speed.modifier,
+        skills: kitten.skills,
+        weapons: kitten.weapons,
+      }),
+    );
   }
 
   findByName(name: string): Promise<Kitten> {

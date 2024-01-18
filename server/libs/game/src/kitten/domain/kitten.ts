@@ -1,5 +1,6 @@
 import { User } from '@game/game/user/domain/user';
 import { randomBetween } from '@game/game/kitten/utils/random';
+import { StatValue } from '@game/game/kitten/domain/stats-value';
 
 export class UserNotFoundForKittenCreationError extends Error {}
 export class KittenNameAlreadyExistError extends Error {}
@@ -24,18 +25,10 @@ export class Kitten {
     private _level: number = 1,
     private _xp: number = 0,
     private _hp: number = 0,
-    private _enduranceStat: number = 0,
-    private _enduranceModifier: number = 1,
-    private _enduranceValue: number = 0,
-    private _strengthStat: number = 0,
-    private _strengthModifier: number = 1,
-    private _strengthValue: number = 0,
-    private _agilityStat: number = 0,
-    private _agilityModifier: number = 1,
-    private _agilityValue: number = 0,
-    private _speedStat: number = 0,
-    private _speedModifier: number = 1,
-    private _speedValue: number = 0,
+    private _endurance: StatValue = StatValue.of(0),
+    private _strength: StatValue = StatValue.of(0),
+    private _agility: StatValue = StatValue.of(0),
+    private _speed: StatValue = StatValue.of(0),
     private _skills: SkillName[] = [],
     private _weapons: WeaponName[] = [],
   ) {}
@@ -64,52 +57,20 @@ export class Kitten {
     return this._hp;
   }
 
-  get enduranceStat() {
-    return this._enduranceStat;
+  get endurance() {
+    return this._endurance;
   }
 
-  get enduranceModifier() {
-    return this._enduranceModifier;
+  get strength() {
+    return this._strength;
   }
 
-  get enduranceValue() {
-    return this._enduranceValue;
+  get agility() {
+    return this._agility;
   }
 
-  get strengthStat() {
-    return this._strengthStat;
-  }
-
-  get strengthModifier() {
-    return this._strengthModifier;
-  }
-
-  get strengthValue() {
-    return this._strengthValue;
-  }
-
-  get agilityStat() {
-    return this._agilityStat;
-  }
-
-  get agilityModifier() {
-    return this._agilityModifier;
-  }
-
-  get agilityValue() {
-    return this._agilityValue;
-  }
-
-  get speedStat() {
-    return this._speedStat;
-  }
-
-  get speedModifier() {
-    return this._speedModifier;
-  }
-
-  get speedValue() {
-    return this._speedValue;
+  get speed() {
+    return this._speed;
   }
 
   get skills() {
@@ -120,84 +81,52 @@ export class Kitten {
     return this._weapons;
   }
 
-  editName(name: string) {
+  set id(id) {
+    this._id = id;
+  }
+
+  set name(name: string) {
     this._name = name;
   }
 
-  editLevel(level: number) {
+  set level(level: number) {
     this._level = level;
   }
 
-  editXp(xp: number) {
+  set xp(xp: number) {
     this._xp = xp;
   }
 
-  editHp(hp: number) {
+  set hp(hp: number) {
     this._hp = hp;
   }
 
-  editEnduranceStat(enduranceStat: number) {
-    this._enduranceStat = enduranceStat;
+  set endurance(endurance: StatValue) {
+    this._endurance = endurance;
   }
 
-  editEnduranceModifier(enduranceModifier: number) {
-    this._enduranceModifier = enduranceModifier;
+  set strength(strength: StatValue) {
+    this._strength = strength;
   }
 
-  editEnduranceValue(enduranceValue: number) {
-    this._enduranceValue = enduranceValue;
+  set agility(agility: StatValue) {
+    this._agility = agility;
   }
 
-  editStrengthStat(strengthStat: number) {
-    this._strengthStat = strengthStat;
+  set speed(speed: StatValue) {
+    this._speed = speed;
   }
 
-  editStrengthModifier(strengthModifier: number) {
-    this._strengthModifier = strengthModifier;
-  }
-
-  editStrengthValue(strengthValue: number) {
-    this._strengthValue = strengthValue;
-  }
-
-  editAgilityStat(agilityStat: number) {
-    this._agilityStat = agilityStat;
-  }
-
-  editAgilityModifier(agilityModifier: number) {
-    this._agilityModifier = agilityModifier;
-  }
-
-  editAgilityValue(agilityValue: number) {
-    this._agilityValue = agilityValue;
-  }
-
-  editSpeedStat(speedStat: number) {
-    this._speedStat = speedStat;
-  }
-
-  editSpeedModifier(speedModifier: number) {
-    this._speedModifier = speedModifier;
-  }
-
-  editSpeedValue(speedValue: number) {
-    this._speedValue = speedValue;
-  }
-
-  editSkills(skills: SkillName[]) {
+  set skills(skills: SkillName[]) {
     this._skills = skills;
   }
 
-  editWeapons(weapons: WeaponName[]) {
+  set weapons(weapons: WeaponName[]) {
     this._weapons = weapons;
   }
 
-  editUser(user: User) {
+  set user(user: User) {
     this._user = user;
-  }
-
-  editId(id) {
-    this._id = id;
   }
 
   calculateInitialStats() {
@@ -210,7 +139,7 @@ export class Kitten {
       this.applySkillModifiers(perk.name);
     }
     this.allocateStatsPoints();
-    this.calculateFinalValues();
+    this.hp = this.calculateHP();
   }
 
   private getRandomBonus(): { type: 'skill' | 'weapon'; name: string } {
@@ -221,8 +150,7 @@ export class Kitten {
 
   private applySkillModifiers(skill: string) {
     if (skill === SkillNameEnum.felineAgility) {
-      this.editAgilityModifier(this.agilityModifier * 1.5);
-      this.editAgilityStat(3);
+      this.agility = StatValue.of(3, this.agility.modifier * 1.5);
     }
   }
 
@@ -230,42 +158,29 @@ export class Kitten {
     let availablePoints = BRUTE_STARTING_POINTS;
 
     const endurancePoints = randomBetween(2, 5);
-    this.editEnduranceStat(endurancePoints);
+    this.endurance = StatValue.of(endurancePoints, this.endurance.modifier);
     availablePoints -= endurancePoints;
 
     const strengthPoints = Math.min(
       randomBetween(2, 5),
       availablePoints - 2 * 2,
     );
-    this.editStrengthStat(strengthPoints);
+    this.strength = StatValue.of(strengthPoints, this.strength.modifier);
     availablePoints -= strengthPoints;
 
     const agilityPoints = Math.min(
       randomBetween(2, 5),
       availablePoints - 2 * 1,
     );
-    this.editAgilityStat(agilityPoints);
+    this.agility = StatValue.of(agilityPoints, this.agility.modifier);
+
     availablePoints -= agilityPoints;
-
-    this.editSpeedStat(availablePoints);
-  }
-
-  private calculateFinalValues() {
-    this.editEnduranceValue(
-      Math.floor(this.enduranceStat * this.enduranceModifier),
-    );
-    this.editStrengthValue(
-      Math.floor(this.strengthStat * this.strengthModifier),
-    );
-    this.editAgilityValue(Math.floor(this.agilityStat * this.agilityModifier));
-    this.editSpeedValue(Math.floor(this.speedStat * this.speedModifier));
-
-    this.editHp(this.calculateHP());
+    this.speed = StatValue.of(availablePoints, this.speed.modifier);
   }
 
   private calculateHP() {
     const baseHP = 50;
-    const enduranceContribution = Math.max(this.enduranceValue, 0) * 6;
+    const enduranceContribution = Math.max(this.endurance.finalValue, 0) * 6;
     const levelContribution = this.level * 0.25 * 6;
     return Math.floor(baseHP + enduranceContribution + levelContribution);
   }
@@ -278,18 +193,14 @@ export class Kitten {
       level: this.level,
       xp: this.xp,
       hp: this.hp,
-      enduranceStat: this.enduranceStat,
-      enduranceModifier: this.enduranceModifier,
-      enduranceValue: this.enduranceValue,
-      strengthStat: this.strengthStat,
-      strengthModifier: this.strengthModifier,
-      strengthValue: this.strengthValue,
-      agilityStat: this.agilityStat,
-      agilityModifier: this.agilityModifier,
-      agilityValue: this.agilityValue,
-      speedStat: this.speedStat,
-      speedModifier: this.speedModifier,
-      speedValue: this.speedValue,
+      enduranceValue: this.endurance.value,
+      enduranceModifier: this.endurance.modifier,
+      strengthValue: this.strength.value,
+      strengthModifier: this.strength.modifier,
+      agilityValue: this.agility.value,
+      agilityModifier: this.agility.modifier,
+      speedValue: this.speed.value,
+      speedModifier: this.speed.modifier,
       skills: this.skills,
       weapons: this.weapons,
     };
@@ -303,18 +214,10 @@ export class Kitten {
       data.level,
       data.xp,
       data.hp,
-      data.enduranceStat,
-      data.enduranceModifier,
-      data.enduranceValue,
-      data.strengthStat,
-      data.strengthModifier,
-      data.strengthValue,
-      data.agilityStat,
-      data.agilityModifier,
-      data.agilityValue,
-      data.speedStat,
-      data.speedModifier,
-      data.speedValue,
+      StatValue.of(data.enduranceValue, data.enduranceModifier),
+      StatValue.of(data.strengthValue, data.strengthModifier),
+      StatValue.of(data.agilityValue, data.agilityModifier),
+      StatValue.of(data.speedValue, data.speedModifier),
       data.skills,
       data.weapons,
     );
