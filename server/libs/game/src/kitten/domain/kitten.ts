@@ -4,6 +4,7 @@ import { StatValue } from '@game/game/kitten/domain/stats-value';
 
 export class UserNotFoundForKittenCreationError extends Error {}
 export class KittenNameAlreadyExistError extends Error {}
+export class KittenNotFoundError extends Error {}
 
 export const BRUTE_STARTING_POINTS = 11;
 
