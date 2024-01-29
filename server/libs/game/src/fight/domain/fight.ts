@@ -1,5 +1,7 @@
 import { Kitten } from '@game/game/kitten/domain/kitten';
 
+export class FightWithSameKittenError extends Error {}
+
 export class Fight {
   constructor(
     private _id: number,

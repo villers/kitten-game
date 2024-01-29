@@ -1,5 +1,5 @@
 import { Kitten, KittenNotFoundError } from '@game/game/kitten/domain/kitten';
-import { Fight } from '@game/game/fight/domain/fight';
+import { Fight, FightWithSameKittenError } from '@game/game/fight/domain/fight';
 import { FightRepository } from '@game/game/fight/application/fight.repository';
 import { InMemoryKittenRepository } from '@game/game/kitten/infrastructure/in-memory-kitten-repository';
 
@@ -36,11 +36,16 @@ export class CreateFightUsecase {
       throw new KittenNotFoundError('Kitten 2 does not exist');
     }
 
+    if (existingKitten1.id === existingKitten2.id) {
+      throw new FightWithSameKittenError('Kittens must be different');
+    }
+
     const fight = new Fight(
       undefined,
       createFightCommand.kitten1,
       createFightCommand.kitten2,
     );
+
     const createdFight = await this.fightRepository.create(fight);
 
     presenter.show(createdFight);
