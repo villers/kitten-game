@@ -16,6 +16,7 @@ enum WeaponName {
 
 enum SkillName {
   felineAgility
+  testSkill
 }
 
 enum PetName {

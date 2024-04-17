@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../service/prisma.service';
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
-import { Kitten, SkillName, WeaponName } from '@game/game/kitten/domain/kitten';
+import { Kitten } from '@game/game/kitten/domain/kitten';
 import { User } from '@game/game/user/domain/user';
+import { skills } from '@game/game/kitten/domain/skill';
+import { weapons } from '@game/game/kitten/domain/weapon';
 
 @Injectable()
 export class KittenRepositoryPrisma implements KittenRepository {
@@ -34,6 +36,7 @@ export class KittenRepositoryPrisma implements KittenRepository {
         level: updatedKitten.level,
         xp: updatedKitten.xp,
         hp: updatedKitten.hp,
+        initiative: 0,
         enduranceValue: updatedKitten.enduranceValue,
         enduranceModifier: updatedKitten.enduranceModifier,
         strengthValue: updatedKitten.strengthValue,
@@ -42,11 +45,18 @@ export class KittenRepositoryPrisma implements KittenRepository {
         agilityModifier: updatedKitten.agilityModifier,
         speedValue: updatedKitten.speedValue,
         speedModifier: updatedKitten.speedModifier,
-        skills: updatedKitten.skills,
-        weapons: updatedKitten.weapons,
+        skills: updatedKitten.skills.map((skill) =>
+          skills.find((s) => s.name === skill),
+        ),
+        weapons: updatedKitten.weapons.map((weapon) => {
+          return weapons.find((w) => w.name === weapon);
+        }),
+        activeSkills: [],
+        activeWeapon: null,
       }),
     );
   }
+
   async findByName(name: string): Promise<Kitten> {
     const kitten = await this.prisma.kitten.findFirst({
       where: {
@@ -68,6 +78,7 @@ export class KittenRepositoryPrisma implements KittenRepository {
       level: kitten.level,
       xp: kitten.xp,
       hp: kitten.hp,
+      initiative: 0,
       enduranceValue: kitten.enduranceValue,
       enduranceModifier: kitten.enduranceModifier,
       strengthValue: kitten.strengthValue,
@@ -76,8 +87,14 @@ export class KittenRepositoryPrisma implements KittenRepository {
       agilityModifier: kitten.agilityModifier,
       speedValue: kitten.speedValue,
       speedModifier: kitten.speedModifier,
-      skills: kitten.skills as SkillName[],
-      weapons: kitten.weapons as WeaponName[],
+      skills: kitten.skills.map((skill) =>
+        skills.find((s) => s.name === skill),
+      ),
+      weapons: kitten.weapons.map((weapon) => {
+        return weapons.find((w) => w.name === weapon);
+      }),
+      activeSkills: [],
+      activeWeapon: null,
     });
   }
 
@@ -97,8 +114,8 @@ export class KittenRepositoryPrisma implements KittenRepository {
         agilityModifier: kitten.agility.modifier,
         speedValue: kitten.speed.value,
         speedModifier: kitten.speed.modifier,
-        skills: kitten.skills,
-        weapons: kitten.weapons,
+        skills: kitten.skills.map((skill) => skill.name),
+        weapons: kitten.weapons.map((weapon) => weapon.name),
       },
       include: {
         user: true,
@@ -116,6 +133,7 @@ export class KittenRepositoryPrisma implements KittenRepository {
       level: createdKitten.level,
       xp: createdKitten.xp,
       hp: createdKitten.hp,
+      initiative: 0,
       enduranceValue: createdKitten.enduranceValue,
       enduranceModifier: createdKitten.enduranceModifier,
       strengthValue: createdKitten.strengthValue,
@@ -124,8 +142,14 @@ export class KittenRepositoryPrisma implements KittenRepository {
       agilityModifier: createdKitten.agilityModifier,
       speedValue: createdKitten.speedValue,
       speedModifier: createdKitten.speedModifier,
-      skills: createdKitten.skills,
-      weapons: createdKitten.weapons,
+      skills: createdKitten.skills.map((skill) =>
+        skills.find((s) => s.name === skill),
+      ),
+      weapons: createdKitten.weapons.map((weapon) => {
+        return weapons.find((w) => w.name === weapon);
+      }),
+      activeSkills: [],
+      activeWeapon: null,
     });
   }
 
@@ -158,6 +182,7 @@ export class KittenRepositoryPrisma implements KittenRepository {
         level: kitten.level,
         xp: kitten.xp,
         hp: kitten.hp,
+        initiative: 0,
         enduranceValue: kitten.enduranceValue,
         enduranceModifier: kitten.enduranceModifier,
         strengthValue: kitten.strengthValue,
@@ -166,8 +191,14 @@ export class KittenRepositoryPrisma implements KittenRepository {
         agilityModifier: kitten.agilityModifier,
         speedValue: kitten.speedValue,
         speedModifier: kitten.speedModifier,
-        skills: kitten.skills,
-        weapons: kitten.weapons,
+        skills: kitten.skills.map((skill) =>
+          skills.find((s) => s.name === skill),
+        ),
+        weapons: kitten.weapons.map((weapon) => {
+          return weapons.find((w) => w.name === weapon);
+        }),
+        activeSkills: [],
+        activeWeapon: null,
       });
     });
   }

@@ -36,15 +36,13 @@ export class CreateFightUsecase {
       throw new KittenNotFoundError('Kitten 2 does not exist');
     }
 
-    if (existingKitten1.id === existingKitten2.id) {
-      throw new FightWithSameKittenError('Kittens must be different');
-    }
-
     const fight = new Fight(
       undefined,
       createFightCommand.kitten1,
       createFightCommand.kitten2,
     );
+
+    fight.simulate();
 
     const createdFight = await this.fightRepository.create(fight);
 

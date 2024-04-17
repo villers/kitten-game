@@ -1,5 +1,6 @@
 export enum SkillNameEnum {
   felineAgility = 'felineAgility',
+  testSkill = 'testSkill',
 }
 export type SkillName = keyof typeof SkillNameEnum;
 
@@ -15,7 +16,16 @@ export type SkillType = 'passive' | 'booster' | 'super' | 'talent';
 export const skills: Skill[] = [
   {
     name: 'felineAgility',
-    odds: 60,
-    type: 'booster',
+    odds: 2.5,
+    type: 'super',
+    toss: 8,
+    uses: 2,
+  },
+  {
+    name: 'testSkill',
+    odds: 2.5,
+    type: 'super',
+    toss: 8,
+    uses: 2,
   },
 ];

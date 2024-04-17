@@ -1,7 +1,9 @@
 import { User } from '@game/game/user/domain/user';
-import { Kitten, SkillName, WeaponName } from '@game/game/kitten/domain/kitten';
+import { Kitten } from '@game/game/kitten/domain/kitten';
 import { userBuilder } from '@game/game/user/tests/user-builder';
 import { StatValue } from '@game/game/kitten/domain/stats-value';
+import { Skill } from '@game/game/kitten/domain/skill';
+import { Weapon } from '@game/game/kitten/domain/weapon';
 
 interface KittenOptions {
   id?: number;
@@ -10,12 +12,15 @@ interface KittenOptions {
   level?: number;
   xp?: number;
   hp?: number;
+  initiative?: number;
   endurance?: StatValue;
   strength?: StatValue;
   agility?: StatValue;
   speed?: StatValue;
-  skills?: SkillName[];
-  weapons?: WeaponName[];
+  skills?: Skill[];
+  weapons?: Weapon[];
+  activeSkills?: Skill[];
+  activeWeapon?: Weapon;
 }
 
 export const kittenBuilder = ({
@@ -29,12 +34,15 @@ export const kittenBuilder = ({
   level = 1,
   xp = 0,
   hp = 0,
+  initiative = 0,
   endurance = StatValue.of(0, 1),
   strength = StatValue.of(0, 1),
   agility = StatValue.of(0, 1),
   speed = StatValue.of(0, 1),
   weapons = [],
   skills = [],
+  activeSkills = [],
+  activeWeapon = null,
 }: KittenOptions = {}) => {
   const props = {
     id,
@@ -43,12 +51,15 @@ export const kittenBuilder = ({
     level,
     xp,
     hp,
+    initiative,
     endurance,
     strength,
     agility,
     speed,
     skills,
     weapons,
+    activeSkills,
+    activeWeapon,
   };
 
   return {
@@ -88,6 +99,12 @@ export const kittenBuilder = ({
         hp: _hp,
       });
     },
+    withInitiative(_initiative: number) {
+      return kittenBuilder({
+        ...props,
+        initiative: _initiative,
+      });
+    },
     withEndurance(_endurance: StatValue) {
       return kittenBuilder({
         ...props,
@@ -112,16 +129,28 @@ export const kittenBuilder = ({
         speed: _speed,
       });
     },
-    withSkills(_skills: SkillName[]) {
+    withSkills(_skills: Skill[]) {
       return kittenBuilder({
         ...props,
         skills: _skills,
       });
     },
-    withWeapons(_weapons: WeaponName[]) {
+    withWeapons(_weapons: Weapon[]) {
       return kittenBuilder({
         ...props,
         weapons: _weapons,
+      });
+    },
+    withActiveSkills(_activeSkills: Skill[]) {
+      return kittenBuilder({
+        ...props,
+        activeSkills: _activeSkills,
+      });
+    },
+    withActiveWeapon(_activeWeapon: Weapon) {
+      return kittenBuilder({
+        ...props,
+        activeWeapon: _activeWeapon,
       });
     },
 
@@ -133,6 +162,7 @@ export const kittenBuilder = ({
         level: props.level,
         xp: props.xp,
         hp: props.hp,
+        initiative: props.initiative,
         enduranceValue: props.endurance.value,
         enduranceModifier: props.endurance.modifier,
         strengthValue: props.strength.value,
@@ -143,6 +173,8 @@ export const kittenBuilder = ({
         speedModifier: props.agility.modifier,
         skills: props.skills,
         weapons: props.weapons,
+        activeSkills: [],
+        activeWeapon: null,
       });
     },
   };

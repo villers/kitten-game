@@ -1,22 +1,37 @@
 import { User } from '@game/game/user/domain/user';
 import { randomBetween } from '@game/game/kitten/utils/random';
 import { StatValue } from '@game/game/kitten/domain/stats-value';
+import {
+  Skill,
+  SkillName,
+  SkillNameEnum,
+  skills,
+} from '@game/game/kitten/domain/skill';
+import {
+  Weapon,
+  WeaponName,
+  WeaponNameEnum,
+  weapons,
+} from '@game/game/kitten/domain/weapon';
 
 export class UserNotFoundForKittenCreationError extends Error {}
 export class KittenNameAlreadyExistError extends Error {}
 export class KittenNotFoundError extends Error {}
 
+export const BASE_FIGHTER_STATS = {
+  reversal: 0,
+  evasion: 0.1,
+  swiftness: 0.2,
+  block: -0.25,
+  accuracy: 0,
+  disarm: 0.05,
+  combo: 0,
+  tempo: 1.2,
+} as const;
+
+export type FighterStat = keyof typeof BASE_FIGHTER_STATS;
+
 export const BRUTE_STARTING_POINTS = 11;
-
-export enum SkillNameEnum {
-  felineAgility = 'felineAgility',
-}
-export type SkillName = keyof typeof SkillNameEnum;
-
-export enum WeaponNameEnum {
-  sword = 'sword',
-}
-export type WeaponName = keyof typeof WeaponNameEnum;
 
 export class Kitten {
   constructor(
@@ -26,12 +41,15 @@ export class Kitten {
     private _level: number = 1,
     private _xp: number = 0,
     private _hp: number = 0,
+    private _initiative: number = 0,
     private _endurance: StatValue = StatValue.of(0),
     private _strength: StatValue = StatValue.of(0),
     private _agility: StatValue = StatValue.of(0),
     private _speed: StatValue = StatValue.of(0),
-    private _skills: SkillName[] = [],
-    private _weapons: WeaponName[] = [],
+    private _skills: Skill[] = [],
+    private _weapons: Weapon[] = [],
+    private _activeSkills: Skill[] = [],
+    private _activeWeapon: Weapon | null = null,
   ) {}
 
   get id() {
@@ -58,6 +76,10 @@ export class Kitten {
     return this._hp;
   }
 
+  get initiative() {
+    return this._initiative;
+  }
+
   get endurance() {
     return this._endurance;
   }
@@ -78,8 +100,16 @@ export class Kitten {
     return this._skills;
   }
 
+  get activeSkills() {
+    return this._activeSkills;
+  }
+
   get weapons() {
     return this._weapons;
+  }
+
+  get activeWeapon() {
+    return this._activeWeapon;
   }
 
   set id(id) {
@@ -102,6 +132,10 @@ export class Kitten {
     this._hp = hp;
   }
 
+  set initiative(initiative: number) {
+    this._initiative = initiative;
+  }
+
   set endurance(endurance: StatValue) {
     this._endurance = endurance;
   }
@@ -118,12 +152,20 @@ export class Kitten {
     this._speed = speed;
   }
 
-  set skills(skills: SkillName[]) {
+  set skills(skills: Skill[]) {
     this._skills = skills;
   }
 
-  set weapons(weapons: WeaponName[]) {
+  set activeSkills(activeSkills: Skill[]) {
+    this._activeSkills = activeSkills;
+  }
+
+  set weapons(weapons: Weapon[]) {
     this._weapons = weapons;
+  }
+
+  set activeWeapon(activeWeapon: Weapon | null) {
+    this._activeWeapon = activeWeapon;
   }
 
   set user(user: User) {
@@ -133,8 +175,8 @@ export class Kitten {
   calculateInitialStats() {
     const perk = this.getRandomBonus();
 
-    this._skills = perk.type === 'skill' ? [perk.name as SkillName] : [];
-    this._weapons = perk.type === 'weapon' ? [perk.name as WeaponName] : [];
+    this._skills = perk.type === 'skill' ? [skills[perk.name]] : [];
+    this._weapons = perk.type === 'weapon' ? [weapons[perk.name]] : [];
 
     if (perk.type === 'skill') {
       this.applySkillModifiers(perk.name);
@@ -194,6 +236,7 @@ export class Kitten {
       level: this.level,
       xp: this.xp,
       hp: this.hp,
+      initiative: this.initiative,
       enduranceValue: this.endurance.value,
       enduranceModifier: this.endurance.modifier,
       strengthValue: this.strength.value,
@@ -203,7 +246,9 @@ export class Kitten {
       speedValue: this.speed.value,
       speedModifier: this.speed.modifier,
       skills: this.skills,
+      activeSkills: this.activeSkills,
       weapons: this.weapons,
+      activeWeapon: this.activeWeapon,
     };
   }
 
@@ -215,12 +260,15 @@ export class Kitten {
       data.level,
       data.xp,
       data.hp,
+      data.initiative,
       StatValue.of(data.enduranceValue, data.enduranceModifier),
       StatValue.of(data.strengthValue, data.strengthModifier),
       StatValue.of(data.agilityValue, data.agilityModifier),
       StatValue.of(data.speedValue, data.speedModifier),
       data.skills,
       data.weapons,
+      data.activeSkills,
+      data.activeWeapon,
     );
   }
 }

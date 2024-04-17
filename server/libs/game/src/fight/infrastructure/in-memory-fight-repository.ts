@@ -16,6 +16,10 @@ export class InMemoryFightRepository implements FightRepository {
         id: fight.id,
         attacker: fight.attacker,
         defender: fight.defender,
+        winner: fight.winner,
+        loser: fight.loser,
+        steps: fight.steps,
+        initiative: fight.initiative,
       }),
     );
   }

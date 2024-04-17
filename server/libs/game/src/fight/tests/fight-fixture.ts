@@ -4,8 +4,8 @@ import {
   CreateFightPresenter,
   CreateFightUsecase,
 } from '@game/game/fight/application/usecases/create-fight.usecase';
-import { InMemoryFightRepository } from '@game/game/fight/infrastructure/in-memory-kitten-repository';
 import { InMemoryKittenRepository } from '@game/game/kitten/infrastructure/in-memory-kitten-repository';
+import { InMemoryFightRepository } from '@game/game/fight/infrastructure/in-memory-fight-repository';
 
 export const CreateFightFixture = () => {
   let date: Date;

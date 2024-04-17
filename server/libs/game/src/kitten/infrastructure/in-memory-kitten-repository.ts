@@ -19,6 +19,7 @@ export class InMemoryKittenRepository implements KittenRepository {
         level: kitten.level,
         xp: kitten.xp,
         hp: kitten.hp,
+        initiative: kitten.initiative,
         enduranceValue: kitten.endurance.value,
         enduranceModifier: kitten.endurance.modifier,
         strengthValue: kitten.strength.value,
@@ -29,6 +30,8 @@ export class InMemoryKittenRepository implements KittenRepository {
         speedModifier: kitten.speed.modifier,
         skills: kitten.skills,
         weapons: kitten.weapons,
+        activeSkills: kitten.activeSkills,
+        activeWeapon: kitten.activeWeapon,
       }),
     );
   }
