@@ -11,10 +11,6 @@ import {
   RandomGenerator,
 } from '@game/game/utils/random/random-generator';
 
-export class UserNotFoundForKittenCreationError extends Error {}
-export class KittenNameAlreadyExistError extends Error {}
-export class KittenNotFoundError extends Error {}
-
 export const BASE_FIGHTER_STATS = {
   reversal: 0,
   evasion: 0.1,

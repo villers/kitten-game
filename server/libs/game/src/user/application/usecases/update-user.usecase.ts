@@ -1,5 +1,6 @@
 import { UserRepository } from '@game/game/user/application/user.repository';
-import { UserEmailAlreadyInUseError, User } from '@game/game/user/domain/user';
+import { User } from '@game/game/user/domain/user';
+import { UserEmailAlreadyInUseError } from '@game/game/user/domain/error';
 
 export class UpdateUserCommand {
   id: number;

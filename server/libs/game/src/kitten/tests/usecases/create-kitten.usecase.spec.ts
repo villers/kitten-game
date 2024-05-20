@@ -7,7 +7,7 @@ import { kittenBuilder } from '@game/game/kitten/tests/kitten-builder';
 import {
   UserNotFoundForKittenCreationError,
   KittenNameAlreadyExistError,
-} from '@game/game/kitten/domain/kitten';
+} from '@game/game/kitten/domain/error';
 
 describe('Feature: Kitten Creation', () => {
   let fixture: KittenFixture;

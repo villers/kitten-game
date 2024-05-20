@@ -9,7 +9,7 @@ import {
   UserInvalidEmailFormatError,
   UserPasswordRequiredError,
   UserPasswordTooShortError,
-} from '@game/game/user/domain/user';
+} from '@game/game/user/domain/error';
 
 describe('Feature: User Creation', () => {
   let fixture: UserFixture;

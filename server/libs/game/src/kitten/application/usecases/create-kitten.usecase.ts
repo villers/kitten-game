@@ -1,10 +1,10 @@
 import { UserRepository } from '@game/game/user/application/user.repository';
 import { KittenRepository } from '@game/game/kitten/application/kitten.repository';
 import {
-  Kitten,
   UserNotFoundForKittenCreationError,
   KittenNameAlreadyExistError,
-} from '@game/game/kitten/domain/kitten';
+} from '@game/game/kitten/domain/error';
+import { Kitten } from '@game/game/kitten/domain/kitten';
 
 export class CreateKittenCommand {
   id?: number;

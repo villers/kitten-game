@@ -5,9 +5,11 @@ import {
 } from '@game/game/kitten/domain/kitten';
 import { Weapon, WeaponName } from '@game/game/kitten/domain/weapon';
 import { Skill, SkillName } from '@game/game/kitten/domain/skill';
-import { randomBetween } from '@game/game/kitten/utils/random';
-
-export class FightWithSameKittenError extends Error {}
+import {
+  DefaultRandomGenerator,
+  RandomGenerator,
+} from '@game/game/utils/random/random-generator';
+import { FightWithSameKittenError } from '@game/game/fight/domain/error';
 
 export interface LeaveStep {
   action: 'leave';
@@ -150,6 +152,7 @@ export class Fight {
     private _loser: string | null = null,
     private _steps: FightStep[] = [],
     private _initiative: number = 0,
+    private _randomGenerator: RandomGenerator = new DefaultRandomGenerator(),
   ) {
     if (_attacker.id === _defender.id) {
       throw new FightWithSameKittenError('Kittens must be different');
@@ -286,7 +289,7 @@ export class Fight {
       if (b.hp <= 0) return -1;
       // Random is initiatives are equal
       if (a.initiative === b.initiative) {
-        return Math.random() > 0.5 ? 1 : -1;
+        return this._randomGenerator.random() > 0.5 ? 1 : -1;
       }
       // Lower initiative first
       return a.initiative - b.initiative;
@@ -350,7 +353,7 @@ export class Fight {
 
     // Repeat attack only if not countering
     if (!isCounter) {
-      let random = Math.random();
+      let random = this._randomGenerator.random();
       while (!attackResult.reversed && random < combo) {
         // Stop the combo if the fighter took a hit
         if (fighter.hp < initialFighterHp) {
@@ -370,7 +373,7 @@ export class Fight {
         if (comboBlocked) attackResult.blocked = true;
         if (comboReversed) attackResult.reversed = true;
 
-        random = Math.random();
+        random = this._randomGenerator.random();
       }
 
       // Check if the opponent reverses the attack
@@ -444,12 +447,12 @@ export class Fight {
         (base +
           fighter.strength.finalValue * 0.1 +
           fighter.agility.finalValue * 0.15) *
-          (1 + Math.random() * 0.5),
+          (1 + this._randomGenerator.random() * 0.5),
       );
     } else {
       damage = Math.floor(
         (base + fighter.strength.finalValue * (0.2 + base * 0.05)) *
-          (0.8 + Math.random() * 0.4) *
+          (0.8 + this._randomGenerator.random() * 0.4) *
           skillsMultiplier,
       );
     }
@@ -466,7 +469,7 @@ export class Fight {
     // No counter-attack if opponent is dead
     if (opponent.hp <= 0) return false;
 
-    const random = Math.random();
+    const random = this._randomGenerator.random();
 
     const valueToBeat =
       ((opponent.activeWeapon?.reach || 0) -
@@ -481,7 +484,7 @@ export class Fight {
     if (opponent.hp <= 0) return false;
 
     return (
-      Math.random() * ease <
+      this._randomGenerator.random() * ease <
       this.getFighterStat(opponent, 'block') -
         this.getFighterStat(fighter, 'accuracy', 'weapon')
     );
@@ -500,7 +503,7 @@ export class Fight {
       40,
     );
 
-    const random = Math.random();
+    const random = this._randomGenerator.random();
 
     return (
       random * difficulty <
@@ -558,7 +561,7 @@ export class Fight {
     if (!supers.length) return null;
 
     const NO_SUPER_TOSS = 10;
-    const randomSuper = randomBetween(
+    const randomSuper = this._randomGenerator.between(
       0,
       supers.reduce((acc, skill) => acc + (skill.toss || 0), 0) + NO_SUPER_TOSS,
     );

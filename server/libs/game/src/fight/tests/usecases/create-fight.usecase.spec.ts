@@ -4,9 +4,9 @@ import {
 } from '@game/game/fight/tests/fight-fixture';
 import { kittenBuilder } from '@game/game/kitten/tests/kitten-builder';
 import { fightBuilder } from '@game/game/fight/tests/fight-builder';
-import { KittenNotFoundError } from '@game/game/kitten/domain/kitten';
-import { FightWithSameKittenError } from '@game/game/fight/domain/fight';
+import { KittenNotFoundError } from '@game/game/kitten/domain/error';
 import { skills } from '@game/game/kitten/domain/skill';
+import { FightWithSameKittenError } from '@game/game/fight/domain/error';
 
 describe('Feature: Combat Execution', () => {
   let fixture: FightFixture;
