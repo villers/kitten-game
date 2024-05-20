@@ -1,18 +1,15 @@
 import { User } from '@game/game/user/domain/user';
-import { randomBetween } from '@game/game/kitten/utils/random';
 import { StatValue } from '@game/game/kitten/domain/stats-value';
-import {
-  Skill,
-  SkillName,
-  SkillNameEnum,
-  skills,
-} from '@game/game/kitten/domain/skill';
+import { Skill, SkillNameEnum, skills } from '@game/game/kitten/domain/skill';
 import {
   Weapon,
-  WeaponName,
   WeaponNameEnum,
   weapons,
 } from '@game/game/kitten/domain/weapon';
+import {
+  DefaultRandomGenerator,
+  RandomGenerator,
+} from '@game/game/utils/random/random-generator';
 
 export class UserNotFoundForKittenCreationError extends Error {}
 export class KittenNameAlreadyExistError extends Error {}
@@ -50,6 +47,7 @@ export class Kitten {
     private _weapons: Weapon[] = [],
     private _activeSkills: Skill[] = [],
     private _activeWeapon: Weapon | null = null,
+    private randomGenerator: RandomGenerator = new DefaultRandomGenerator(),
   ) {}
 
   get id() {
@@ -186,7 +184,7 @@ export class Kitten {
   }
 
   private getRandomBonus(): { type: 'skill' | 'weapon'; name: string } {
-    return Math.random() > 0.5
+    return this.randomGenerator.random() > 0.5
       ? { type: 'skill', name: SkillNameEnum.felineAgility }
       : { type: 'weapon', name: WeaponNameEnum.sword };
   }
@@ -200,19 +198,19 @@ export class Kitten {
   private allocateStatsPoints() {
     let availablePoints = BRUTE_STARTING_POINTS;
 
-    const endurancePoints = randomBetween(2, 5);
+    const endurancePoints = this.randomGenerator.between(2, 5);
     this.endurance = StatValue.of(endurancePoints, this.endurance.modifier);
     availablePoints -= endurancePoints;
 
     const strengthPoints = Math.min(
-      randomBetween(2, 5),
+      this.randomGenerator.between(2, 5),
       availablePoints - 2 * 2,
     );
     this.strength = StatValue.of(strengthPoints, this.strength.modifier);
     availablePoints -= strengthPoints;
 
     const agilityPoints = Math.min(
-      randomBetween(2, 5),
+      this.randomGenerator.between(2, 5),
       availablePoints - 2 * 1,
     );
     this.agility = StatValue.of(agilityPoints, this.agility.modifier);
