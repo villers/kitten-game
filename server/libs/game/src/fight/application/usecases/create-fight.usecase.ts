@@ -2,7 +2,7 @@ import { Kitten } from '@game/game/kitten/domain/kitten';
 import { Fight } from '@game/game/fight/domain/fight';
 import { FightRepository } from '@game/game/fight/application/fight.repository';
 import { InMemoryKittenRepository } from '@game/game/kitten/infrastructure/in-memory-kitten-repository';
-import { KittenNotFoundError } from '@game/game/kitten/domain/error';
+import { KittenNotFoundError } from '@game/game/kitten/domain/errors';
 
 export interface CreateFightPresenter {
   show(fight: Fight): void;

@@ -9,7 +9,7 @@ import {
   DefaultRandomGenerator,
   RandomGenerator,
 } from '@game/game/utils/random/random-generator';
-import { FightWithSameKittenError } from '@game/game/fight/domain/error';
+import { FightWithSameKittenError } from '@game/game/fight/domain/errors';
 
 export interface LeaveStep {
   action: 'leave';

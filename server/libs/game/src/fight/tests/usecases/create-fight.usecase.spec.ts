@@ -4,9 +4,10 @@ import {
 } from '@game/game/fight/tests/fight-fixture';
 import { kittenBuilder } from '@game/game/kitten/tests/kitten-builder';
 import { fightBuilder } from '@game/game/fight/tests/fight-builder';
-import { KittenNotFoundError } from '@game/game/kitten/domain/error';
+import { KittenNotFoundError } from '@game/game/kitten/domain/errors';
 import { skills } from '@game/game/kitten/domain/skill';
-import { FightWithSameKittenError } from '@game/game/fight/domain/error';
+import { FightWithSameKittenError } from '@game/game/fight/domain/errors';
+import { StatValue } from '@game/game/kitten/domain/stats-value';
 
 describe('Feature: Combat Execution', () => {
   let fixture: FightFixture;
@@ -32,14 +33,14 @@ describe('Feature: Combat Execution', () => {
     test('executes a combat with valid fighters with many hp', async () => {
       const kitten1 = kittenBuilder()
         .withId(1)
+        .withEndurance(StatValue.of(1000, 1))
         .withName('fighter')
-        .withHp(1000)
         .withSkills(skills.filter((skill) => skill.name === 'felineAgility'))
         .build();
       const Kitten2 = kittenBuilder()
         .withId(2)
+        .withEndurance(StatValue.of(100, 1))
         .withName('opponents')
-        .withHp(100)
         .build();
 
       fixture.givenFightersAvailable([kitten1, Kitten2]);

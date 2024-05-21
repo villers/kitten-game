@@ -3,7 +3,7 @@ import { KittenRepository } from '@game/game/kitten/application/kitten.repositor
 import {
   UserNotFoundForKittenCreationError,
   KittenNameAlreadyExistError,
-} from '@game/game/kitten/domain/error';
+} from '@game/game/kitten/domain/errors';
 import { Kitten } from '@game/game/kitten/domain/kitten';
 
 export class CreateKittenCommand {

@@ -11,7 +11,6 @@ interface KittenOptions {
   user?: User;
   level?: number;
   xp?: number;
-  hp?: number;
   initiative?: number;
   endurance?: StatValue;
   strength?: StatValue;
@@ -33,12 +32,11 @@ export const kittenBuilder = ({
     .build(),
   level = 1,
   xp = 0,
-  hp = 0,
   initiative = 0,
-  endurance = StatValue.of(0, 1),
-  strength = StatValue.of(0, 1),
-  agility = StatValue.of(0, 1),
-  speed = StatValue.of(0, 1),
+  endurance = StatValue.of(1, 1),
+  strength = StatValue.of(1, 1),
+  agility = StatValue.of(1, 1),
+  speed = StatValue.of(1, 1),
   weapons = [],
   skills = [],
   activeSkills = [],
@@ -50,7 +48,6 @@ export const kittenBuilder = ({
     user,
     level,
     xp,
-    hp,
     initiative,
     endurance,
     strength,
@@ -91,12 +88,6 @@ export const kittenBuilder = ({
       return kittenBuilder({
         ...props,
         xp: _xp,
-      });
-    },
-    withHp(_hp: number) {
-      return kittenBuilder({
-        ...props,
-        hp: _hp,
       });
     },
     withInitiative(_initiative: number) {
@@ -153,15 +144,13 @@ export const kittenBuilder = ({
         activeWeapon: _activeWeapon,
       });
     },
-
     build(): Kitten {
-      return Kitten.fromData({
+      const kitten = Kitten.fromData({
         id: props.id,
         name: props.name,
         user: props.user,
         level: props.level,
         xp: props.xp,
-        hp: props.hp,
         initiative: props.initiative,
         enduranceValue: props.endurance.value,
         enduranceModifier: props.endurance.modifier,
@@ -169,13 +158,15 @@ export const kittenBuilder = ({
         strengthModifier: props.strength.modifier,
         agilityValue: props.agility.value,
         agilityModifier: props.agility.modifier,
-        speedValue: props.agility.value,
-        speedModifier: props.agility.modifier,
+        speedValue: props.speed.value,
+        speedModifier: props.speed.modifier,
         skills: props.skills,
         weapons: props.weapons,
         activeSkills: [],
         activeWeapon: null,
       });
+      kitten.calculateHP();
+      return kitten;
     },
   };
 };

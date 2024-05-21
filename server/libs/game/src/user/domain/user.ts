@@ -3,7 +3,7 @@ import {
   UserInvalidEmailFormatError,
   UserPasswordRequiredError,
   UserPasswordTooShortError,
-} from '@game/game/user/domain/error';
+} from '@game/game/user/domain/errors';
 
 export class User {
   constructor(

@@ -7,7 +7,8 @@ import { kittenBuilder } from '@game/game/kitten/tests/kitten-builder';
 import {
   UserNotFoundForKittenCreationError,
   KittenNameAlreadyExistError,
-} from '@game/game/kitten/domain/error';
+} from '@game/game/kitten/domain/errors';
+import { StatValue } from '@game/game/kitten/domain/stats-value';
 
 describe('Feature: Kitten Creation', () => {
   let fixture: KittenFixture;
@@ -17,6 +18,16 @@ describe('Feature: Kitten Creation', () => {
   });
 
   describe('Kitten Creation Rules', () => {
+    test('should calculate HP based on stats', () => {
+      const kitten = kittenBuilder()
+        .withEndurance(StatValue.of(5, 1))
+        .withLevel(2)
+        .build();
+
+      const expectedHP = Math.floor(50 + 5 * 6 + 2 * 0.25 * 6);
+      expect(kitten.hp).toBe(expectedHP);
+    });
+
     test('creates a kitten with valid details', async () => {
       const user = userBuilder()
         .withId(1)

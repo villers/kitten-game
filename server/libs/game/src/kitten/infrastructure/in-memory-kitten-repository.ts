@@ -18,7 +18,6 @@ export class InMemoryKittenRepository implements KittenRepository {
         user: kitten.user,
         level: kitten.level,
         xp: kitten.xp,
-        hp: kitten.hp,
         initiative: kitten.initiative,
         enduranceValue: kitten.endurance.value,
         enduranceModifier: kitten.endurance.modifier,

@@ -27,13 +27,14 @@ export type FighterStat = keyof typeof BASE_FIGHTER_STATS;
 export const BRUTE_STARTING_POINTS = 11;
 
 export class Kitten {
+  private _hp: number;
+
   constructor(
     private _id: number,
     private _name: string,
     private _user: User,
     private _level: number = 1,
     private _xp: number = 0,
-    private _hp: number = 0,
     private _initiative: number = 0,
     private _endurance: StatValue = StatValue.of(0),
     private _strength: StatValue = StatValue.of(0),
@@ -169,57 +170,65 @@ export class Kitten {
   calculateInitialStats() {
     const perk = this.getRandomBonus();
 
-    this._skills = perk.type === 'skill' ? [skills[perk.name]] : [];
-    this._weapons = perk.type === 'weapon' ? [weapons[perk.name]] : [];
+    this._skills =
+      perk.type === 'skill' ? [skills[perk.name as SkillNameEnum]] : [];
+    this._weapons =
+      perk.type === 'weapon' ? [weapons[perk.name as WeaponNameEnum]] : [];
 
     if (perk.type === 'skill') {
-      this.applySkillModifiers(perk.name);
+      this.applySkillModifiers(perk.name as SkillNameEnum);
     }
     this.allocateStatsPoints();
-    this.hp = this.calculateHP();
+    this.calculateHP();
   }
 
   private getRandomBonus(): { type: 'skill' | 'weapon'; name: string } {
-    return this.randomGenerator.random() > 0.5
-      ? { type: 'skill', name: SkillNameEnum.felineAgility }
-      : { type: 'weapon', name: WeaponNameEnum.sword };
-  }
-
-  private applySkillModifiers(skill: string) {
-    if (skill === SkillNameEnum.felineAgility) {
-      this.agility = StatValue.of(3, this.agility.modifier * 1.5);
-    }
+    return this.randomGenerator.generateRandomBoolean()
+      ? {
+          type: 'skill',
+          name: this.randomGenerator.getRandomKeyFromObject(SkillNameEnum),
+        }
+      : {
+          type: 'weapon',
+          name: this.randomGenerator.getRandomKeyFromObject(WeaponNameEnum),
+        };
   }
 
   private allocateStatsPoints() {
     let availablePoints = BRUTE_STARTING_POINTS;
 
     const endurancePoints = this.randomGenerator.between(2, 5);
-    this.endurance = StatValue.of(endurancePoints, this.endurance.modifier);
+    this._endurance = StatValue.of(endurancePoints, this._endurance.modifier);
     availablePoints -= endurancePoints;
 
     const strengthPoints = Math.min(
       this.randomGenerator.between(2, 5),
       availablePoints - 2 * 2,
     );
-    this.strength = StatValue.of(strengthPoints, this.strength.modifier);
+    this._strength = StatValue.of(strengthPoints, this._strength.modifier);
     availablePoints -= strengthPoints;
 
     const agilityPoints = Math.min(
       this.randomGenerator.between(2, 5),
       availablePoints - 2 * 1,
     );
-    this.agility = StatValue.of(agilityPoints, this.agility.modifier);
+    this._agility = StatValue.of(agilityPoints, this._agility.modifier);
 
     availablePoints -= agilityPoints;
-    this.speed = StatValue.of(availablePoints, this.speed.modifier);
+    this._speed = StatValue.of(availablePoints, this._speed.modifier);
   }
 
-  private calculateHP() {
+  private applySkillModifiers(skill: SkillNameEnum) {
+    if (skill === SkillNameEnum.felineAgility) {
+      this._agility = StatValue.of(3, this._agility.modifier * 1.5);
+    }
+  }
+
+  public calculateHP() {
     const baseHP = 50;
     const enduranceContribution = Math.max(this.endurance.finalValue, 0) * 6;
     const levelContribution = this.level * 0.25 * 6;
-    return Math.floor(baseHP + enduranceContribution + levelContribution);
+    this._hp = Math.floor(baseHP + enduranceContribution + levelContribution);
   }
 
   get data() {
@@ -246,14 +255,13 @@ export class Kitten {
     };
   }
 
-  static fromData(data: Kitten['data']) {
+  static fromData(data: Omit<Kitten['data'], 'hp'>) {
     return new Kitten(
       data.id,
       data.name,
       User.fromData(data.user),
       data.level,
       data.xp,
-      data.hp,
       data.initiative,
       StatValue.of(data.enduranceValue, data.enduranceModifier),
       StatValue.of(data.strengthValue, data.strengthModifier),
