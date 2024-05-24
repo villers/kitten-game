@@ -13,46 +13,58 @@ describe('Feature: Battle Execution', () => {
 
   describe('Battle Execution Rules', () => {
     test('executes a battle with valid fighters', async () => {
-      const kitten1 = kittenBuilder().withId(1).withName('fighter').build();
-      const kitten2 = kittenBuilder().withId(2).withName('opponent').build();
+      const winner = kittenBuilder()
+        .withId(1)
+        .withName('winner')
+        .withLevel(10)
+        .build();
+      const looser = kittenBuilder()
+        .withId(2)
+        .withName('looser')
+        .withLevel(1)
+        .build();
 
-      const combatants = fixture.givenCombatantsAvailable([kitten1, kitten2]);
+      fixture.givenCombatantsAvailable([winner, looser]);
 
-      await fixture.whenBattleIsExecuted(kitten1, kitten2);
+      await fixture.whenBattleIsExecuted(winner, looser);
 
       fixture.thenBattleShouldBe(
-        battleBuilder().withCombatants(combatants).build(),
+        battleBuilder()
+          .withCombatants([winner, looser])
+          .withWinner(winner)
+          .withLooser(looser)
+          .build(),
       );
     });
 
-    test('fails to execute a battle with invalid kitten1', async () => {
-      const kitten1 = kittenBuilder().withId(1).build();
-      const kitten2 = kittenBuilder().withId(2).build();
+    test('fails to execute a battle with invalid fighter', async () => {
+      const fighter = kittenBuilder().withId(1).withName('fighter').build();
+      const opponent = kittenBuilder().withId(2).withName('opponent').build();
 
-      fixture.givenCombatantsAvailable([kitten2]);
+      fixture.givenCombatantsAvailable([opponent]);
 
-      await fixture.whenBattleIsExecuted(kitten1, kitten2);
-
-      fixture.thenErrorShouldBe(KittenNotFoundError);
-    });
-
-    test('fails to execute a battle avec invalid kitten2', async () => {
-      const kitten1 = kittenBuilder().withId(1).build();
-      const kitten2 = kittenBuilder().withId(2).build();
-
-      fixture.givenCombatantsAvailable([kitten1]);
-
-      await fixture.whenBattleIsExecuted(kitten1, kitten2);
+      await fixture.whenBattleIsExecuted(fighter, opponent);
 
       fixture.thenErrorShouldBe(KittenNotFoundError);
     });
 
-    test('fails to execute a battle if kitten1 is kitten2', async () => {
-      const kitten1 = kittenBuilder().withId(1).build();
+    test('fails to execute a battle with invalid opponent', async () => {
+      const fighter = kittenBuilder().withId(1).withName('fighter').build();
+      const opponent = kittenBuilder().withId(2).withName('opponent').build();
 
-      fixture.givenCombatantsAvailable([kitten1, kitten1]);
+      fixture.givenCombatantsAvailable([fighter]);
 
-      await fixture.whenBattleIsExecuted(kitten1, kitten1);
+      await fixture.whenBattleIsExecuted(fighter, opponent);
+
+      fixture.thenErrorShouldBe(KittenNotFoundError);
+    });
+
+    test('fails to execute a battle if fighter is opponent', async () => {
+      const fighter = kittenBuilder().withId(1).withName('fighter').build();
+
+      fixture.givenCombatantsAvailable([fighter, fighter]);
+
+      await fixture.whenBattleIsExecuted(fighter, fighter);
 
       fixture.thenErrorShouldBe(BattleWithSameKittenError);
     });

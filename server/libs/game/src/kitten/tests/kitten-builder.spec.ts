@@ -1,7 +1,9 @@
 import { kittenBuilder } from './kitten-builder';
-import { StatValue } from '@game/game/kitten/domain/stats-value';
-import { EmailText, PasswordText, User } from '@game/game/user/domain/user';
+import { StatValue } from '@game/game/kitten/domain/stat-value';
+import { User } from '@game/game/user/domain/user';
 import { Kitten } from '@game/game/kitten/domain/kitten';
+import { PasswordText } from '@game/game/user/domain/password-text';
+import { EmailText } from '@game/game/user/domain/email-text';
 
 describe('Kitten Builder', () => {
   it('should create a kitten with default values', () => {
@@ -26,6 +28,6 @@ describe('Kitten Builder', () => {
     expect(kitten.strength.finalValue).toBe(1);
     expect(kitten.agility.finalValue).toBe(1);
     expect(kitten.speed.finalValue).toBe(1);
-    expect(kitten.hp).toBe(57); // Adjust according to the formula used in calculateHP
+    expect(kitten.hp).toBe(57);
   });
 });

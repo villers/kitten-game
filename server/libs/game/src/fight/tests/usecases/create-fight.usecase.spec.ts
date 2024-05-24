@@ -7,7 +7,7 @@ import { fightBuilder } from '@game/game/fight/tests/fight-builder';
 import { KittenNotFoundError } from '@game/game/kitten/domain/errors';
 import { skills } from '@game/game/kitten/domain/skill';
 import { FightWithSameKittenError } from '@game/game/fight/domain/errors';
-import { StatValue } from '@game/game/kitten/domain/stats-value';
+import { StatValue } from '@game/game/kitten/domain/stat-value';
 
 describe('Feature: Combat Execution', () => {
   let fixture: FightFixture;

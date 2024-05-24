@@ -1,12 +1,13 @@
-import { Combatant } from '../domain/combatant';
 import { BattleSteps } from '@game/game/battle/domain/battle-step';
 import { Battle } from '@game/game/battle/domain/battle';
+import { Kitten } from '@game/game/kitten/domain/kitten';
 
 interface BattleOptions {
   id?: number;
-  combatants?: Combatant[];
+  combatants?: Kitten[];
   steps?: BattleSteps[];
-  winner?: Combatant | null;
+  winner?: Kitten | null;
+  looser?: Kitten | null;
 }
 
 export const battleBuilder = ({
@@ -14,8 +15,9 @@ export const battleBuilder = ({
   combatants = [],
   steps = [],
   winner = null,
+  looser = null,
 }: BattleOptions = {}) => {
-  const props = { id, combatants, steps, winner };
+  const props = { id, combatants, steps, winner, looser };
 
   return {
     withId(_id: number) {
@@ -24,7 +26,7 @@ export const battleBuilder = ({
         id: _id,
       });
     },
-    withCombatants(_combatants: Combatant[]) {
+    withCombatants(_combatants: Kitten[]) {
       return battleBuilder({
         ...props,
         combatants: _combatants,
@@ -36,16 +38,23 @@ export const battleBuilder = ({
         steps: _steps,
       });
     },
-    withWinner(_winner: Combatant) {
+    withWinner(_winner: Kitten) {
       return battleBuilder({
         ...props,
         winner: _winner,
       });
     },
+    withLooser(_looser: Kitten) {
+      return battleBuilder({
+        ...props,
+        looser: _looser,
+      });
+    },
     build(): Battle {
       const battle = new Battle(props.id, props.combatants);
-      battle.setSteps(props.steps);
-      battle.setWinner(props.winner);
+      battle.steps = props.steps;
+      battle.winner = props.winner;
+      battle.looser = props.looser;
       return battle;
     },
   };

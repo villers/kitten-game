@@ -1,5 +1,5 @@
 import { User } from '@game/game/user/domain/user';
-import { StatValue } from '@game/game/kitten/domain/stats-value';
+import { StatValue } from '@game/game/kitten/domain/stat-value';
 import { Skill, SkillNameEnum, skills } from '@game/game/kitten/domain/skill';
 import {
   Weapon,
@@ -35,7 +35,7 @@ export class Kitten {
     private _user: User,
     private _level: number = 1,
     private _xp: number = 0,
-    private _initiative: number = 0,
+    private _initiative: number = 1,
     private _endurance: StatValue = StatValue.of(0),
     private _strength: StatValue = StatValue.of(0),
     private _agility: StatValue = StatValue.of(0),
@@ -198,29 +198,29 @@ export class Kitten {
     let availablePoints = BRUTE_STARTING_POINTS;
 
     const endurancePoints = this.randomGenerator.between(2, 5);
-    this._endurance = StatValue.of(endurancePoints, this._endurance.modifier);
+    this.endurance = StatValue.of(endurancePoints, this.endurance.modifier);
     availablePoints -= endurancePoints;
 
     const strengthPoints = Math.min(
       this.randomGenerator.between(2, 5),
       availablePoints - 2 * 2,
     );
-    this._strength = StatValue.of(strengthPoints, this._strength.modifier);
+    this.strength = StatValue.of(strengthPoints, this.strength.modifier);
     availablePoints -= strengthPoints;
 
     const agilityPoints = Math.min(
       this.randomGenerator.between(2, 5),
       availablePoints - 2 * 1,
     );
-    this._agility = StatValue.of(agilityPoints, this._agility.modifier);
+    this.agility = StatValue.of(agilityPoints, this.agility.modifier);
 
     availablePoints -= agilityPoints;
-    this._speed = StatValue.of(availablePoints, this._speed.modifier);
+    this.speed = StatValue.of(availablePoints, this.speed.modifier);
   }
 
   private applySkillModifiers(skill: SkillNameEnum) {
     if (skill === SkillNameEnum.felineAgility) {
-      this._agility = StatValue.of(3, this._agility.modifier * 1.5);
+      this.agility = StatValue.of(3, this.agility.modifier * 1.5);
     }
   }
 
@@ -229,6 +229,27 @@ export class Kitten {
     const enduranceContribution = Math.max(this.endurance.finalValue, 0) * 6;
     const levelContribution = this.level * 0.25 * 6;
     this._hp = Math.floor(baseHP + enduranceContribution + levelContribution);
+  }
+
+  public increaseInitiative() {
+    const random = this.randomGenerator.between(0, 10);
+    this.initiative +=
+      this.initiative * BASE_FIGHTER_STATS.tempo + random / 100;
+  }
+
+  public isAlive() {
+    return this.hp > 0;
+  }
+
+  public isDead() {
+    return !this.isAlive();
+  }
+
+  public attack(defender: Kitten): number {
+    const damage = this.randomGenerator.between(1, this.strength.finalValue);
+    defender.hp -= damage;
+
+    return damage;
   }
 
   get data() {
@@ -255,7 +276,10 @@ export class Kitten {
     };
   }
 
-  static fromData(data: Omit<Kitten['data'], 'hp'>) {
+  static fromData(
+    data: Omit<Kitten['data'], 'hp'>,
+    randomGenerator: RandomGenerator = new DefaultRandomGenerator(),
+  ) {
     return new Kitten(
       data.id,
       data.name,
@@ -271,6 +295,7 @@ export class Kitten {
       data.weapons,
       data.activeSkills,
       data.activeWeapon,
+      randomGenerator,
     );
   }
 }

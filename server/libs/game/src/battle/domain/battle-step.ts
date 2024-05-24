@@ -1,17 +1,7 @@
+type BattleAction = 'arrive' | 'attack' | 'death' | 'end';
+
 export interface BattleStep {
-  action: string;
-}
-
-export interface AttackStep extends BattleStep {
-  action: 'attack';
-  attacker: string;
-  target: string;
-  damage: number;
-}
-
-export interface VictoryStep extends BattleStep {
-  action: 'victory';
-  winner: string;
+  action: BattleAction;
 }
 
 export interface ArriveStep extends BattleStep {
@@ -19,20 +9,11 @@ export interface ArriveStep extends BattleStep {
   combatant: string;
 }
 
-export interface EvadeStep extends BattleStep {
-  action: 'evade';
-  combatant: string;
-}
-
-export interface BlockStep extends BattleStep {
-  action: 'block';
-  combatant: string;
-}
-
-export interface CounterStep extends BattleStep {
-  action: 'counter';
-  combatant: string;
-  opponent: string;
+export interface AttackStep extends BattleStep {
+  action: 'attack';
+  attacker: string;
+  target: string;
+  damage: number;
 }
 
 export interface DeathStep extends BattleStep {
@@ -46,12 +27,4 @@ export interface EndStep extends BattleStep {
   loser: string;
 }
 
-export type BattleSteps =
-  | AttackStep
-  | VictoryStep
-  | ArriveStep
-  | EvadeStep
-  | BlockStep
-  | CounterStep
-  | DeathStep
-  | EndStep;
+export type BattleSteps = ArriveStep | AttackStep | DeathStep | EndStep;

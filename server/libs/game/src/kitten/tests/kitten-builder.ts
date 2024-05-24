@@ -1,9 +1,10 @@
 import { User } from '@game/game/user/domain/user';
 import { Kitten } from '@game/game/kitten/domain/kitten';
 import { userBuilder } from '@game/game/user/tests/user-builder';
-import { StatValue } from '@game/game/kitten/domain/stats-value';
+import { StatValue } from '@game/game/kitten/domain/stat-value';
 import { Skill } from '@game/game/kitten/domain/skill';
 import { Weapon } from '@game/game/kitten/domain/weapon';
+import { FixedRandomGenerator } from '@game/game/utils/random/random-generator';
 
 interface KittenOptions {
   id?: number;
@@ -20,6 +21,7 @@ interface KittenOptions {
   weapons?: Weapon[];
   activeSkills?: Skill[];
   activeWeapon?: Weapon;
+  seed?: number;
 }
 
 export const kittenBuilder = ({
@@ -32,7 +34,7 @@ export const kittenBuilder = ({
     .build(),
   level = 1,
   xp = 0,
-  initiative = 0,
+  initiative = 1,
   endurance = StatValue.of(1, 1),
   strength = StatValue.of(1, 1),
   agility = StatValue.of(1, 1),
@@ -41,6 +43,7 @@ export const kittenBuilder = ({
   skills = [],
   activeSkills = [],
   activeWeapon = null,
+  seed = 1,
 }: KittenOptions = {}) => {
   const props = {
     id,
@@ -57,6 +60,7 @@ export const kittenBuilder = ({
     weapons,
     activeSkills,
     activeWeapon,
+    seed,
   };
 
   return {
@@ -144,27 +148,37 @@ export const kittenBuilder = ({
         activeWeapon: _activeWeapon,
       });
     },
-    build(): Kitten {
-      const kitten = Kitten.fromData({
-        id: props.id,
-        name: props.name,
-        user: props.user,
-        level: props.level,
-        xp: props.xp,
-        initiative: props.initiative,
-        enduranceValue: props.endurance.value,
-        enduranceModifier: props.endurance.modifier,
-        strengthValue: props.strength.value,
-        strengthModifier: props.strength.modifier,
-        agilityValue: props.agility.value,
-        agilityModifier: props.agility.modifier,
-        speedValue: props.speed.value,
-        speedModifier: props.speed.modifier,
-        skills: props.skills,
-        weapons: props.weapons,
-        activeSkills: [],
-        activeWeapon: null,
+    withSeed(_seed: number) {
+      return kittenBuilder({
+        ...props,
+        seed: _seed,
       });
+    },
+    build(): Kitten {
+      const randomGenerator = new FixedRandomGenerator(props.seed);
+      const kitten = Kitten.fromData(
+        {
+          id: props.id,
+          name: props.name,
+          user: props.user,
+          level: props.level,
+          xp: props.xp,
+          initiative: props.initiative,
+          enduranceValue: props.endurance.value,
+          enduranceModifier: props.endurance.modifier,
+          strengthValue: props.strength.value,
+          strengthModifier: props.strength.modifier,
+          agilityValue: props.agility.value,
+          agilityModifier: props.agility.modifier,
+          speedValue: props.speed.value,
+          speedModifier: props.speed.modifier,
+          skills: props.skills,
+          weapons: props.weapons,
+          activeSkills: [],
+          activeWeapon: null,
+        },
+        randomGenerator,
+      );
       kitten.calculateHP();
       return kitten;
     },

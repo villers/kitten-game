@@ -1,27 +1,32 @@
-import { Combatant } from './combatant';
 import { BattleWithSameKittenError } from './errors';
 import {
   DefaultRandomGenerator,
   RandomGenerator,
 } from '@game/game/utils/random/random-generator';
 import { BattleSteps } from '@game/game/battle/domain/battle-step';
+import { Kitten } from '@game/game/kitten/domain/kitten';
 
 export class Battle {
   private _steps: BattleSteps[] = [];
-  private _winner: Combatant | null = null;
+  private _winner: Kitten | null = null;
+  private _looser: Kitten | null = null;
 
   constructor(
     private _id: number,
-    private _combatants: Combatant[],
+    private _combatants: Kitten[],
     private randomGenerator: RandomGenerator = new DefaultRandomGenerator(),
   ) {
-    if (_combatants[0].kitten.id === _combatants[1].kitten.id) {
+    if (_combatants[0].id === _combatants[1].id) {
       throw new BattleWithSameKittenError('Kittens must be different');
     }
   }
 
   get id() {
     return this._id;
+  }
+
+  set id(id: number) {
+    this._id = id;
   }
 
   get combatants() {
@@ -36,12 +41,20 @@ export class Battle {
     return this._winner;
   }
 
-  setSteps(steps: BattleSteps[]) {
+  get looser() {
+    return this._looser;
+  }
+
+  set steps(steps: BattleSteps[]) {
     this._steps = steps;
   }
 
-  setWinner(winner: Combatant) {
+  set winner(winner: Kitten) {
     this._winner = winner;
+  }
+
+  set looser(looser: Kitten) {
+    this._looser = looser;
   }
 
   simulate() {
@@ -52,78 +65,75 @@ export class Battle {
       this.playCombatantTurn();
       this.checkForWinner();
     }
-
-    this.finalizeBattle();
   }
 
   private initializeBattle() {
-    this._combatants.forEach((combatant) => {
-      this._steps.push({
+    this.combatants.forEach((combatant) => {
+      this.steps.push({
         action: 'arrive',
-        combatant: combatant.kitten.name,
+        combatant: combatant.name,
       });
-    });
-  }
-
-  private checkForWinner() {
-    const aliveCombatants = this._combatants.filter((c) => c.kitten.hp > 0);
-
-    if (aliveCombatants.length === 1) {
-      this._winner = aliveCombatants[0];
-      this._steps.push({
-        action: 'end',
-        winner: this._winner.kitten.name,
-        loser: this._combatants.find((c) => c !== this._winner).kitten.name,
-      });
-    } else if (aliveCombatants.length === 0) {
-      this._steps.push({
-        action: 'end',
-        winner: 'None',
-        loser: 'None',
-      });
-      this._winner = null;
-    }
-  }
-
-  private finalizeBattle() {
-    const loser = this._combatants.find((c) => c !== this._winner);
-    this._steps.push({
-      action: 'end',
-      winner: this._winner ? this._winner.kitten.name : 'None',
-      loser: loser ? loser.kitten.name : 'None',
     });
   }
 
   private orderCombatants() {
-    this._combatants.sort((a, b) => b.kitten.initiative - a.kitten.initiative);
+    this.combatants.sort((a, b) => {
+      if (a.hp <= 0) return 1;
+      if (b.hp <= 0) return -1;
+      // Random order if initiative is the same
+      if (a.initiative === b.initiative) {
+        return this.randomGenerator.random() > 0.5 ? 1 : -1;
+      }
+      // Lower initiative first
+      return a.initiative - b.initiative;
+    });
+  }
+
+  private rotateCombatants() {
+    this.combatants.push(this.combatants.shift());
   }
 
   private playCombatantTurn() {
-    const attacker = this._combatants[0];
-    const defender = this._combatants[1];
+    const attacker = this.combatants[0];
+    const defender = this.combatants[1];
 
-    if (attacker.kitten.hp > 0) {
-      const damage = this.randomGenerator.between(
-        1,
-        attacker.kitten.strength.finalValue,
-      );
-      defender.kitten.hp -= damage;
-
-      this._steps.push({
+    if (attacker.isAlive()) {
+      const damage = attacker.attack(defender);
+      this.steps.push({
         action: 'attack',
-        attacker: attacker.kitten.name,
-        target: defender.kitten.name,
+        attacker: attacker.name,
+        target: defender.name,
         damage,
       });
 
-      if (defender.kitten.hp <= 0) {
-        this._steps.push({
+      if (defender.isDead()) {
+        this.steps.push({
           action: 'death',
-          combatant: defender.kitten.name,
+          combatant: defender.name,
         });
       }
     }
 
-    this._combatants.push(this._combatants.shift());
+    attacker.increaseInitiative();
+
+    this.rotateCombatants();
+  }
+
+  private checkForWinner() {
+    const aliveCombatants = this.combatants.filter((kitten) =>
+      kitten.isAlive(),
+    );
+
+    if (aliveCombatants.length > 1) {
+      return;
+    }
+
+    this.winner = aliveCombatants[0];
+    this.looser = this.combatants.find((kitten) => kitten.isDead());
+    this.steps.push({
+      action: 'end',
+      winner: this.winner.name,
+      loser: this.looser.name,
+    });
   }
 }

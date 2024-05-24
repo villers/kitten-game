@@ -1,9 +1,5 @@
-import {
-  UserEmailRequiredError,
-  UserInvalidEmailFormatError,
-  UserPasswordRequiredError,
-  UserPasswordTooShortError,
-} from '@game/game/user/domain/errors';
+import { PasswordText } from '@game/game/user/domain/password-text';
+import { EmailText } from '@game/game/user/domain/email-text';
 
 export class User {
   constructor(
@@ -28,11 +24,11 @@ export class User {
     this._id = id;
   }
 
-  editEmail(email: string) {
+  set email(email: string) {
     this._email = EmailText.of(email);
   }
 
-  editPassword(password: string) {
+  set password(password: string) {
     this._password = PasswordText.of(password);
   }
 
@@ -50,43 +46,5 @@ export class User {
       EmailText.of(data.email),
       PasswordText.of(data.password),
     );
-  }
-}
-
-export class EmailText {
-  private constructor(readonly value: string) {}
-
-  static isValid(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  static of(text: string) {
-    if (text.trim().length === 0) {
-      throw new UserEmailRequiredError('Email cannot be empty');
-    }
-
-    if (!this.isValid(text)) {
-      throw new UserInvalidEmailFormatError('Email must be valid');
-    }
-
-    return new EmailText(text);
-  }
-}
-
-export class PasswordText {
-  private constructor(readonly value: string) {}
-
-  static of(text: string) {
-    if (text.trim().length === 0) {
-      throw new UserPasswordRequiredError('Password cannot be empty');
-    }
-
-    if (text.trim().length < 6) {
-      throw new UserPasswordTooShortError(
-        'Password must be at least 6 characters long',
-      );
-    }
-
-    return new PasswordText(text);
   }
 }

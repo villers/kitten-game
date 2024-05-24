@@ -28,3 +28,30 @@ export class DefaultRandomGenerator implements RandomGenerator {
     return keys[randomIndex];
   }
 }
+
+export class FixedRandomGenerator implements RandomGenerator {
+  private seed: number;
+
+  constructor(seed: number = 1) {
+    this.seed = seed;
+  }
+
+  random(): number {
+    const x = Math.sin(this.seed++) * 10000;
+    return x - Math.floor(x);
+  }
+
+  between(min: number, max: number): number {
+    return Math.floor(this.random() * (max - min + 1)) + min;
+  }
+
+  generateRandomBoolean(): boolean {
+    return this.random() >= 0.5;
+  }
+
+  getRandomKeyFromObject<T>(obj: T): keyof T {
+    const keys = Object.keys(obj) as (keyof T)[];
+    const randomIndex = Math.floor(this.random() * keys.length);
+    return keys[randomIndex];
+  }
+}

@@ -7,9 +7,7 @@ export class InMemoryBattleRepository implements BattleRepository {
 
   async create(battle: Battle): Promise<Battle> {
     if (!battle.id) {
-      const newBattle = new Battle(this.autoincrement++, battle.combatants);
-      this.save(newBattle);
-      return Promise.resolve(newBattle);
+      battle.id = this.autoincrement++;
     }
 
     this.save(battle);
