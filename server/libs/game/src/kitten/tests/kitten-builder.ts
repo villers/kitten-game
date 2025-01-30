@@ -2,9 +2,11 @@ import { User } from '@game/game/user/domain/user';
 import { Kitten } from '@game/game/kitten/domain/kitten';
 import { userBuilder } from '@game/game/user/tests/user-builder';
 import { StatValue } from '@game/game/kitten/domain/stat-value';
-import { Skill } from '@game/game/kitten/domain/skill';
-import { Weapon } from '@game/game/kitten/domain/weapon';
 import { FixedRandomGenerator } from '@game/game/utils/random/random-generator';
+import { SkillAction } from '@game/game/kitten/domain/skill-action';
+import { KittenEquipment } from '@game/game/kitten/domain/kitten-equipment';
+import { KittenAttributes } from '@game/game/kitten/domain/kitten-attributes';
+import { KittenStatus } from '@game/game/kitten/domain/kitten-status';
 
 interface KittenOptions {
   id?: number;
@@ -13,14 +15,10 @@ interface KittenOptions {
   level?: number;
   xp?: number;
   initiative?: number;
-  endurance?: StatValue;
-  strength?: StatValue;
-  agility?: StatValue;
-  speed?: StatValue;
-  skills?: Skill[];
-  weapons?: Weapon[];
-  activeSkills?: Skill[];
-  activeWeapon?: Weapon;
+  status?: KittenStatus;
+  attributes?: KittenAttributes;
+  skills?: SkillAction[];
+  equipment?: KittenEquipment;
   seed?: number;
 }
 
@@ -35,14 +33,17 @@ export const kittenBuilder = ({
   level = 1,
   xp = 0,
   initiative = 1,
-  endurance = StatValue.of(1, 1),
-  strength = StatValue.of(1, 1),
-  agility = StatValue.of(1, 1),
-  speed = StatValue.of(1, 1),
-  weapons = [],
+  attributes = new KittenAttributes(
+    0, // hp, will be calculated
+    0, // maxHp, will be calculated
+    StatValue.of(1), // endurance
+    StatValue.of(1), // strength
+    StatValue.of(1), // agility
+    StatValue.of(1), // speed
+  ),
+  status = new KittenStatus(),
   skills = [],
-  activeSkills = [],
-  activeWeapon = null,
+  equipment = new KittenEquipment(),
   seed = 1,
 }: KittenOptions = {}) => {
   const props = {
@@ -52,14 +53,10 @@ export const kittenBuilder = ({
     level,
     xp,
     initiative,
-    endurance,
-    strength,
-    agility,
-    speed,
+    attributes,
+    status,
     skills,
-    weapons,
-    activeSkills,
-    activeWeapon,
+    equipment,
     seed,
   };
 
@@ -100,52 +97,28 @@ export const kittenBuilder = ({
         initiative: _initiative,
       });
     },
-    withEndurance(_endurance: StatValue) {
+    withAttributes(_attributes: KittenAttributes) {
       return kittenBuilder({
         ...props,
-        endurance: _endurance,
+        attributes: _attributes,
       });
     },
-    withStrength(_strength: StatValue) {
+    withStatus(_status: KittenStatus) {
       return kittenBuilder({
         ...props,
-        strength: _strength,
+        status: _status,
       });
     },
-    withAgility(_agility: StatValue) {
-      return kittenBuilder({
-        ...props,
-        agility: _agility,
-      });
-    },
-    withSpeed(_speed: StatValue) {
-      return kittenBuilder({
-        ...props,
-        speed: _speed,
-      });
-    },
-    withSkills(_skills: Skill[]) {
+    withSkills(_skills: SkillAction[]) {
       return kittenBuilder({
         ...props,
         skills: _skills,
       });
     },
-    withWeapons(_weapons: Weapon[]) {
+    withEquipment(_equipment: KittenEquipment) {
       return kittenBuilder({
         ...props,
-        weapons: _weapons,
-      });
-    },
-    withActiveSkills(_activeSkills: Skill[]) {
-      return kittenBuilder({
-        ...props,
-        activeSkills: _activeSkills,
-      });
-    },
-    withActiveWeapon(_activeWeapon: Weapon) {
-      return kittenBuilder({
-        ...props,
-        activeWeapon: _activeWeapon,
+        equipment: _equipment,
       });
     },
     withSeed(_seed: number) {
@@ -164,22 +137,14 @@ export const kittenBuilder = ({
           level: props.level,
           xp: props.xp,
           initiative: props.initiative,
-          enduranceValue: props.endurance.value,
-          enduranceModifier: props.endurance.modifier,
-          strengthValue: props.strength.value,
-          strengthModifier: props.strength.modifier,
-          agilityValue: props.agility.value,
-          agilityModifier: props.agility.modifier,
-          speedValue: props.speed.value,
-          speedModifier: props.speed.modifier,
+          attributes: props.attributes,
+          status: props.status,
+          equipment: props.equipment,
           skills: props.skills,
-          weapons: props.weapons,
-          activeSkills: [],
-          activeWeapon: null,
         },
         randomGenerator,
       );
-      kitten.calculateHP();
+      kitten.attributes.calculateHP(props.level);
       return kitten;
     },
   };

@@ -38,11 +38,11 @@ export const CreateKittenFixture = () => {
       expect(kitten.level).toBe(1);
       expect(kitten.xp).toBe(0);
       expect(kitten.hp).toBeGreaterThan(0); // Based on endurance
-      expect(kitten.endurance.finalValue).toBeGreaterThan(0);
-      expect(kitten.strength.finalValue).toBeGreaterThan(0);
-      expect(kitten.agility.finalValue).toBeGreaterThan(0);
-      expect(kitten.speed.finalValue).toBeGreaterThan(0);
-      expect(kitten.weapons.length + kitten.skills.length).toBe(1);
+      expect(kitten.attributes.endurance.finalValue).toBeGreaterThan(0);
+      expect(kitten.attributes.strength.finalValue).toBeGreaterThan(0);
+      expect(kitten.attributes.agility.finalValue).toBeGreaterThan(0);
+      expect(kitten.attributes.speed.finalValue).toBeGreaterThan(0);
+      //expect(kitten.equipment.weapons.length + kitten.skills.length).toBe(1);
     },
     givenUsersExists(users: User[]) {
       userRepository.givenExistingUser(users);

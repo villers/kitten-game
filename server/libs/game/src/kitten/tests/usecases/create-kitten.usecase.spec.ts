@@ -9,6 +9,7 @@ import {
   KittenNameAlreadyExistError,
 } from '@game/game/kitten/domain/errors';
 import { StatValue } from '@game/game/kitten/domain/stat-value';
+import { KittenAttributes } from '@game/game/kitten/domain/kitten-attributes';
 
 describe('Feature: Kitten Creation', () => {
   let fixture: KittenFixture;
@@ -20,7 +21,16 @@ describe('Feature: Kitten Creation', () => {
   describe('Kitten Creation Rules', () => {
     test('should calculate HP based on stats', () => {
       const kitten = kittenBuilder()
-        .withEndurance(StatValue.of(5, 1))
+        .withAttributes(
+          new KittenAttributes(
+            0,
+            0,
+            StatValue.of(5),
+            StatValue.of(1),
+            StatValue.of(1),
+            StatValue.of(1),
+          ),
+        )
         .withLevel(2)
         .build();
 

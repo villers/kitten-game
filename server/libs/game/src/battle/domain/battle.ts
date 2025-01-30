@@ -106,7 +106,7 @@ export class Battle {
         damage,
       });
 
-      if (defender.isDead()) {
+      if (defender.attributes.isDead()) {
         this.steps.push({
           action: 'death',
           combatant: defender.name,
@@ -129,7 +129,7 @@ export class Battle {
     }
 
     this.winner = aliveCombatants[0];
-    this.looser = this.combatants.find((kitten) => kitten.isDead());
+    this.looser = this.combatants.find((kitten) => kitten.attributes.isDead());
     this.steps.push({
       action: 'end',
       winner: this.winner.name,
