@@ -1,0 +1,31 @@
+###
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "email": "user@email.com",
+  "password": "password"
+}
+
+<> 2024-01-14T123039.400.json
+
+###
+
+PUT http://localhost:3000/api/user/1
+Content-Type: application/json
+
+{
+  "email": "user@email.com",
+  "password": "password"
+}
+
+
+###
+
+POST http://localhost:3000/api/kitten
+Content-Type: application/json
+
+{
+  "name": "Ghota",
+  "user": 1
+}

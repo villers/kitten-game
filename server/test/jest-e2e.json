@@ -1,0 +1,14 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "@game/game/(.*)": "<rootDir>/../libs/game/src/$1",
+    "@game/game": "<rootDir>/../libs/game/src"
+  },
+  "testTimeout": 30000
+}
