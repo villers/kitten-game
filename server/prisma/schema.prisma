@@ -10,63 +10,143 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum WeaponName {
-  sword
-}
-
-enum SkillName {
-  felineAgility
-  testSkill
-}
-
-enum PetName {
-  human
-}
-
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique @db.VarChar(255)
-  password String   @db.VarChar(255)
-  kittens  Kitten[]
+  id            String    @id @default(uuid())
+  email         String    @unique @db.VarChar(255)
+  password      String    @db.VarChar(255)
+  username      String    @unique @db.VarChar(100)
+  createdAt     DateTime  @default(now()) @db.Timestamptz()
+  updatedAt     DateTime  @updatedAt @db.Timestamptz()
+  kittens       Kitten[]
+}
+
+// Types de compétences
+enum SkillType {
+  ATTACK
+  DEFENSE
+  SPECIAL
+  PASSIVE
+}
+
+// Modèle pour les compétences disponibles
+model Skill {
+  id            String    @id @default(uuid())
+  name          String    @unique @db.VarChar(100)
+  description   String    @db.Text
+  type          SkillType
+  effect        Json      // Stocke les effets de la compétence sous format JSON
+  levelRequired Int       @default(1)
+  
+  // Relations
+  kittenSkills  KittenSkill[]
+}
+
+// Table de jonction pour les compétences des chatons
+model KittenSkill {
+  id            String    @id @default(uuid())
+  kittenId      String
+  skillId       String
+  level         Int       @default(1)
+  
+  // Relations
+  kitten        Kitten    @relation(fields: [kittenId], references: [id], onDelete: Cascade)
+  skill         Skill     @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  
+  @@unique([kittenId, skillId])
+}
+
+// Types d'objets
+enum ItemType {
+  WEAPON
+  ARMOR
+  ACCESSORY
+  CONSUMABLE
+}
+
+// Rareté des objets
+enum Rarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+// Modèle pour les objets/items
+model Item {
+  id            String    @id @default(uuid())
+  name          String    @db.VarChar(100)
+  description   String    @db.Text
+  type          ItemType
+  rarity        Rarity
+  effect        Json      // Effets de l'item (bonus de stats, etc.)
+  
+  // Relations
+  inventories   KittenInventory[]
+}
+
+// Table de jonction pour l'inventaire des chatons
+model KittenInventory {
+  id            String    @id @default(uuid())
+  kittenId      String
+  itemId        String
+  quantity      Int       @default(1)
+  equipped      Boolean   @default(false)
+  
+  // Relations
+  kitten        Kitten    @relation(fields: [kittenId], references: [id], onDelete: Cascade)
+  item          Item      @relation(fields: [itemId], references: [id])
+  
+  @@unique([kittenId, itemId])
 }
 
 model Kitten {
-  id                Int          @id @default(autoincrement())
-  name              String       @db.VarChar(255)
-  deletedAt         DateTime?    @db.Timestamptz()
-  createdAt         DateTime     @default(now()) @db.Timestamptz()
-  level             Int          @default(1)
-  xp                Int          @default(0)
-  hp                Int          @default(0)
-  enduranceValue    Int          @default(0)
-  enduranceModifier Float        @default(1)
-  strengthValue     Int          @default(0)
-  strengthModifier  Float        @default(1)
-  agilityValue      Int          @default(0)
-  agilityModifier   Float        @default(1)
-  speedValue        Int          @default(0)
-  speedModifier     Float        @default(1)
-  user              User?        @relation(fields: [userId], references: [id])
-  userId            Int?
-  weapons           WeaponName[] @default([])
-  skills            SkillName[]  @default([])
-
-  lastFight         DateTime? @db.Date
-  fightsLeft        Int       @default(6)
-  victories         Int       @default(0)
-  Fight             Fight[]
-  fightsAsAdversary Fight[]   @relation("Adversary")
+  id                String      @id @default(uuid())
+  name              String      @db.VarChar(100)
+  level             Int         @default(1)
+  xp                Int         @default(0)
+  pointsToSpend     Int         @default(5) // Points de compétence à distribuer
+  
+  // Stats de base
+  strength          Int         @default(5)  // Force (dégâts)
+  agility           Int         @default(5)  // Agilité (esquive/vitesse)
+  intelligence      Int         @default(5)  // Intelligence (sorts/stratégie)
+  vitality          Int         @default(5)  // Vitalité (points de vie)
+  
+  // Statistiques dérivées (calculées à partir des stats de base)
+  hp                Int         @default(50) // PV = vitalité * 10
+  
+  // Combat-related stats
+  lastFight         DateTime?   @db.Date
+  fightsLeft        Int         @default(6)
+  victories         Int         @default(0)
+  defeats           Int         @default(0)
+  
+  // Timestamps
+  createdAt         DateTime    @default(now()) @db.Timestamptz()
+  updatedAt         DateTime    @updatedAt @db.Timestamptz()
+  deletedAt         DateTime?   @db.Timestamptz()
+  
+  // Relations
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  skills            KittenSkill[]
+  inventory         KittenInventory[]
+  fightsAsAttacker  Fight[]     @relation("Attacker")
+  fightsAsDefender  Fight[]     @relation("Defender")
 }
 
 model Fight {
-  id        Int      @id @default(autoincrement())
-  date      DateTime @default(now()) @db.Date
-  kitten1   Kitten   @relation(fields: [kitten1Id], references: [id])
-  kitten1Id Int
-  kitten2   Kitten?  @relation("Adversary", fields: [kitten2Id], references: [id])
-  kitten2Id Int?
-  winner    String   @db.VarChar(255)
-  loser     String   @db.VarChar(255)
-  steps     String   @db.Text
-  fighters  String   @db.Text
+  id            String    @id @default(uuid())
+  date          DateTime  @default(now()) @db.Timestamptz()
+  isFinished    Boolean   @default(false)
+  winnerId      String?   @db.VarChar(255)
+  
+  // Relations
+  attackerId    String
+  defenderId    String
+  attacker      Kitten    @relation("Attacker", fields: [attackerId], references: [id])
+  defender      Kitten    @relation("Defender", fields: [defenderId], references: [id])
+  
+  // Fight log data
+  fightLog      Json      // Stocke tous les tours et actions du combat
 }
